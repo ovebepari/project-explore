@@ -6,62 +6,7 @@
 
 ## Architecture Overview
 
-```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                           KUBERNETES CONTROL PLANE                               │
-│                                                                                  │
-│  ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────────────┐  │
-│  │   API Server     │◄────►│      etcd        │      │   Controller Manager    │  │
-│  │                  │      │                  │      │                         │  │
-│  │  REST ──► Proto  │      │  /registry/...   │      │  ┌───────────────────┐  │  │
-│  │  Authn / Authz   │      │  Key-Value Store │      │  │ Deployment Ctrl   │  │  │
-│  │  Admission Ctrl  │      │  (Protobuf vals) │      │  │ ReplicaSet Ctrl   │  │  │
-│  └──────┬──────▲────┘      └──────────────────┘      │  │ Endpoint Ctrl     │  │  │
-│         │      │                                     │  └───────────────────┘  │  │
-│         │      │  HTTP/2 Watch Stream                │        ▲ Reconcile      │  │
-│         │      └─────────────────────────────────────┼────────┘               │  │
-│         │                                            └─────────────────────────┘  │
-│         │                                                                        │
-│  ┌──────▼──────────┐                                 ┌─────────────────────────┐  │
-│  │   Scheduler      │                                │   kube-proxy            │  │
-│  │                  │                                │                         │  │
-│  │  Watch unbound   │                                │  Watches Services +     │  │
-│  │  Pods, assign    │                                │  Endpoints, programs    │  │
-│  │  spec.nodeName   │                                │  iptables NAT rules     │  │
-│  └──────────────────┘                                └───────────┬─────────────┘  │
-│                                                                  │               │
-└──────────────────────────────────────────────────────────────────┼───────────────┘
-                                                                   │
-┌──────────────────────────────────────────────────────────────────┼───────────────┐
-│                              WORKER NODE (kind container)        │               │
-│                                                                  │               │
-│  ┌──────────────────┐     ┌──────────────────┐     ┌─────────────▼─────────────┐ │
-│  │    Kubelet        │────►│   containerd     │     │  Kernel: Netfilter/       │ │
-│  │                  │     │   (CRI runtime)  │     │          iptables         │ │
-│  │  Watches Pods    │     │                  │     │                           │ │
-│  │  Calls CRI API   │     │  Creates:        │     │  KUBE-SERVICES            │ │
-│  │  Sets cgroups    │     │  - namespaces    │     │    │                      │ │
-│  └──────────────────┘     │  - cgroups       │     │    ▼                      │ │
-│                           │  - rootfs        │     │  KUBE-SVC-xxxx            │ │
-│                           └───────┬──────────┘     │  (statistic 50/50 split)  │ │
-│                                   │                │    ├──► KUBE-SEP-aaaa     │ │
-│  ┌────────────────────────────────▼──────────────┐ │    │    DNAT ──► Pod A IP │ │
-│  │              Pod Network Namespace             │ │    └──► KUBE-SEP-bbbb     │ │
-│  │                                               │ │         DNAT ──► Pod B IP │ │
-│  │   ┌─────────┐  ┌─────────┐                   │ │                           │ │
-│  │   │  eth0   │  │  lo     │                   │ │                           │ │
-│  │   │ (veth)  │  │ 127.0.0.1│                  │ │                           │ │
-│  │   └─────────┘  └─────────┘                   │ └───────────────────────────┘ │
-│  └───────────────────────────────────────────────┘                               │
-│                                                                                  │
-│  ┌──────────────────────────────────────────────────────────────────────────────┐ │
-│  │  cgroups v2   /sys/fs/cgroup/kubepods.slice/...                             │ │
-│  │                                                                              │ │
-│  │   memory.max = 134217728   (128Mi limit set by Kubelet)                      │ │
-│  │   cpu.max    = ...         (CPU quota if configured)                         │ │
-│  └──────────────────────────────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────────────────────────────┘
-```
+![Diagram](./images/kubernetes_control_plane_and_worker_node.png)
 
 ---
 
