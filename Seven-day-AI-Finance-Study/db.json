@@ -3,3 +3,26 @@
 {"op": "set", "k": "activeDay", "v": 1, "t": "2026-10-22T03:01:38Z"}
 {"op": "set", "k": "theme", "v": "light", "t": "2026-10-22T03:01:40Z"}
 {"op": "comment_rm", "id": "d1m1", "idx": 0, "t": "2026-10-22T03:01:56Z"}
+{"op": "set", "k": "activeDay", "v": 1, "t": "2026-10-22T03:09:22Z"}
+{"op": "task", "id": "d1m1", "v": true, "t": "2026-10-22T03:09:29Z"}
+{"op": "set", "k": "startDate", "v": "2026-10-22T03:09:29.507Z", "t": "2026-10-22T03:09:29Z"}
+{"op": "task", "id": "d1e2", "v": true, "t": "2026-10-22T03:09:34Z"}
+{"op": "set", "k": "activeDay", "v": 2, "t": "2026-10-22T03:09:38Z"}
+{"op": "task", "id": "d2e1", "v": true, "t": "2026-10-22T03:09:44Z"}
+{"op": "task", "id": "d2e2", "v": true, "t": "2026-10-22T03:09:44Z"}
+{"op": "task", "id": "d2a4", "v": true, "t": "2026-10-22T03:09:47Z"}
+{"op": "task", "id": "d2a1", "v": true, "t": "2026-10-22T03:09:48Z"}
+{"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-22T03:09:50Z"}
+{"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-22T03:36:07Z"}
+{"op": "comment_add", "id": "d3m1", "v": "SIMD vs SIMT, SIMD can be found in CPUs, SIMT is in GPUs", "t": "2026-10-22T03:45:16Z"}
+{"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-22T03:47:09Z"}
+{"op": "task", "id": "d3m1", "v": true, "t": "2026-10-22T03:59:03Z"}
+{"op": "res_add", "id": "d3m2", "label": "Article 2", "url": "https://developer.nvidia.com/blog/cuda-refresher-getting-started-with-cuda/", "t": "2026-10-22T04:12:30Z"}
+{"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-22T04:12:30Z"}
+{"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-22T06:44:08Z"}
+{"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-22T09:11:26Z"}
+{"op": "res_rm", "id": "d3m2", "idx": 0, "t": "2026-10-22T09:43:13Z"}
+{"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-22T09:43:13Z"}
+{"op": "res_add", "id": "d3m2", "label": "Getting Started with CUDA", "url": "https://developer.nvidia.com/blog/cuda-refresher-getting-started-with-cuda/", "t": "2026-10-22T09:43:27Z"}
+{"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-22T09:43:27Z"}
+{"op": "task", "id": "d3m2", "v": true, "t": "2026-10-22T10:23:15Z"}
