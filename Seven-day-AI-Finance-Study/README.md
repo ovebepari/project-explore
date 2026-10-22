@@ -26,16 +26,15 @@ A portable, self-contained study dashboard for the **7-Day Systems-First AI, MLO
 python3 server.py
 ```
 
-That's it. Your browser opens to `http://localhost:8080` with the full dashboard.
+That's it. Open `http://localhost:8080` in your browser.
 
 > **Zero dependencies.** No `pip install`, no `npm`, no build step. Just Python 3.7+ (standard library only).
 
 ### Options
 
 ```bash
-python3 server.py                # default port 8080, auto-opens browser
+python3 server.py                # default port 8080
 python3 server.py --port 9000    # custom port
-python3 server.py --no-browser   # don't auto-open browser
 ```
 
 ## 📁 Project Structure

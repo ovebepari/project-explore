@@ -18,8 +18,6 @@ import json
 import sqlite3
 import os
 import sys
-import webbrowser
-import threading
 import argparse
 from pathlib import Path
 from urllib.parse import urlparse
@@ -184,9 +182,6 @@ def main():
     parser.add_argument(
         "--port", "-p", type=int, default=8080, help="Port to serve on (default: 8080)"
     )
-    parser.add_argument(
-        "--no-browser", action="store_true", help="Don't auto-open browser"
-    )
     args = parser.parse_args()
 
     init_db()
@@ -207,11 +202,6 @@ def main():
 ╚══════════════════════════════════════════════════╝
 """
     print(banner)
-
-    if not args.no_browser:
-        threading.Timer(
-            0.5, lambda: webbrowser.open(f"http://localhost:{args.port}")
-        ).start()
 
     try:
         server.serve_forever()

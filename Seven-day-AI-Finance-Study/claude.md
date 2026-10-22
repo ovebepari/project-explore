@@ -67,7 +67,6 @@ docs/              → Reference documents (not served)
 ## Running
 
 ```bash
-python3 server.py                # default port 8080, auto-opens browser
+python3 server.py                # default port 8080
 python3 server.py --port 9000    # custom port
-python3 server.py --no-browser   # don't auto-open browser
 ```
