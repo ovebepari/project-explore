@@ -1,0 +1,5 @@
+{"t":"2026-10-22T03:00:00Z","op":"snapshot","v":{"tasks":{},"journal":{},"timeLog":{},"customResources":{},"comments":{},"activeDay":1,"journalDay":1,"startDate":null,"theme":"dark"}}
+{"op": "comment_add", "id": "d1m1", "v": "Need to review this", "t": "2026-10-22T03:01:10Z"}
+{"op": "set", "k": "activeDay", "v": 1, "t": "2026-10-22T03:01:38Z"}
+{"op": "set", "k": "theme", "v": "light", "t": "2026-10-22T03:01:40Z"}
+{"op": "comment_rm", "id": "d1m1", "idx": 0, "t": "2026-10-22T03:01:56Z"}
