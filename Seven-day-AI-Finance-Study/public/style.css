@@ -1120,17 +1120,18 @@ body {
   color: white;
 }
 
-/* ===== COMMENTS (Google Docs style) ===== */
+/* ===== COMMENTS (Google Docs gutter) ===== */
 .task-item {
   position: relative;
 }
 
+/* Trigger button on each task */
 .comment-trigger {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius);
@@ -1159,10 +1160,7 @@ body {
   color: var(--accent);
 }
 
-.comment-trigger svg {
-  width: 14px;
-  height: 14px;
-}
+.comment-trigger svg { width: 14px; height: 14px; }
 
 .comment-count {
   position: absolute;
@@ -1183,9 +1181,7 @@ body {
   line-height: 1;
 }
 
-.comment-count:empty {
-  display: none;
-}
+.comment-count:empty { display: none; }
 
 /* Active task highlight */
 .task-item.commenting {
@@ -1194,68 +1190,32 @@ body {
   padding-left: 5px;
 }
 
-/* Comment card (fixed, Google Docs-style sidebar card) */
+/* Right-side comment cards (always visible) */
 .comment-card {
   position: fixed;
-  width: 300px;
+  width: 260px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-left: 3px solid var(--accent);
-  z-index: 1000;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.1);
-  animation: commentSlideIn 0.2s ease;
-  max-height: 400px;
+  z-index: 50;
+  font-family: 'Inter', sans-serif;
+  transition: top 0.15s ease, opacity 0.15s ease;
+  pointer-events: auto;
+  max-height: 360px;
   display: flex;
   flex-direction: column;
-  font-family: 'Inter', sans-serif;
 }
 
-[data-theme="light"] .comment-card {
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+.comment-card.composing {
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
 }
 
-@keyframes commentSlideIn {
-  from { opacity: 0; transform: translateX(-8px); }
-  to { opacity: 1; transform: translateX(0); }
+[data-theme="light"] .comment-card.composing {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
 
-.comment-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
-}
-
-.comment-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-secondary);
-}
-
-.comment-close {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-
-.comment-close:hover {
-  border-color: var(--red);
-  color: var(--red);
-}
-
+/* Comment items */
 .comment-list {
   overflow-y: auto;
   flex: 1;
@@ -1263,18 +1223,16 @@ body {
 }
 
 .comment-item {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--border-color);
 }
 
-.comment-item:last-child {
-  border-bottom: none;
-}
+.comment-item:last-child { border-bottom: none; }
 
 .comment-text {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.45;
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
@@ -1284,109 +1242,97 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .comment-time {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--text-dim);
   font-family: 'JetBrains Mono', monospace;
 }
 
 .comment-delete {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--text-dim);
   background: transparent;
   border: none;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  padding: 2px 4px;
-  transition: color var(--transition);
+  padding: 1px 3px;
+  opacity: 0;
+  transition: all var(--transition);
 }
 
-.comment-delete:hover {
-  color: var(--red);
-}
+.comment-item:hover .comment-delete { opacity: 1; }
+.comment-delete:hover { color: var(--red); }
 
-.comment-empty {
-  padding: 14px;
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  text-align: center;
-  font-style: italic;
-  margin: 0;
-}
-
+/* Compose area */
 .comment-compose {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border-top: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
 .comment-input {
   width: 100%;
-  min-height: 48px;
-  max-height: 120px;
-  padding: 8px 10px;
+  min-height: 36px;
+  max-height: 100px;
+  padding: 6px 8px;
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   color: var(--text-primary);
   font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  resize: vertical;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  resize: none;
   outline: none;
   transition: border-color var(--transition);
 }
 
-.comment-input:focus {
-  border-color: var(--accent);
-}
-
-.comment-input::placeholder {
-  color: var(--text-dim);
-}
+.comment-input:focus { border-color: var(--accent); }
+.comment-input::placeholder { color: var(--text-dim); }
 
 .comment-compose-actions {
   display: flex;
-  gap: 6px;
-  margin-top: 8px;
+  gap: 5px;
+  margin-top: 6px;
 }
 
-.comment-submit {
-  padding: 5px 14px;
-  background: var(--accent);
-  color: var(--accent-text);
-  border: 1px solid var(--accent);
+.comment-submit,
+.comment-resolve {
+  padding: 4px 10px;
   border-radius: var(--radius);
   font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition);
+  border: 1px solid transparent;
 }
 
-.comment-submit:hover {
-  background: var(--accent-hover);
+.comment-submit {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
 }
+
+.comment-submit:hover { background: var(--accent-hover); }
 
 .comment-resolve {
-  padding: 5px 14px;
   background: transparent;
   color: var(--text-muted);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition);
+  border-color: var(--border-color);
 }
 
 .comment-resolve:hover {
   border-color: var(--green);
   color: var(--green);
+}
+
+/* Hide gutter on narrow screens */
+@media (max-width: 1300px) {
+  .comment-card { display: none !important; }
 }
 
 /* ===== CONFETTI ===== */

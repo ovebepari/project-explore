@@ -906,6 +906,7 @@ function renderPanels() {
 function toggleBlock(header) {
   const card = header.closest('.block-card');
   card.classList.toggle('expanded');
+  setTimeout(updateCommentGutter, 400);
 }
 
 // ===== TOGGLE TASK =====
@@ -1131,6 +1132,7 @@ function switchDay(day) {
     // Expand all blocks in active panel
     target.querySelectorAll('.block-card').forEach(card => card.classList.add('expanded'));
   }
+  setTimeout(updateCommentGutter, 50);
 }
 
 // ===== TIMER =====
@@ -1284,110 +1286,164 @@ async function resetAll() {
   showToast('♻️ All progress reset');
 }
 
-// ===== COMMENTS (Google Docs style) =====
-let activeCommentTaskId = null;
+// ===== COMMENTS (always-visible right gutter) =====
+let activeComposeTaskId = null;
+let _gutterRaf = null;
+let _gutterInitialized = false;
 
-function createCommentCard() {
-  const card = document.createElement('div');
-  card.className = 'comment-card';
-  card.id = 'commentCard';
-  card.style.display = 'none';
-  document.body.appendChild(card);
+function initCommentGutter() {
+  if (_gutterInitialized) return;
+  _gutterInitialized = true;
 
-  // Prevent clicks inside card from propagating to document close handler
-  card.addEventListener('click', e => e.stopPropagation());
-
-  // Close on click outside
+  // Close compose on click outside
   document.addEventListener('click', e => {
-    if (card.style.display !== 'none' &&
-        !card.contains(e.target) &&
+    if (activeComposeTaskId &&
+        !e.target.closest('.comment-card') &&
         !e.target.closest('.comment-trigger')) {
-      hideCommentCard();
+      closeCompose();
     }
   });
 
-  // Reposition on scroll
-  let scrollTimeout;
-  window.addEventListener('scroll', () => {
-    if (card.style.display === 'none') return;
-    if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
-    scrollTimeout = requestAnimationFrame(() => repositionCommentCard());
-  }, { passive: true });
-
-  return card;
+  // Reposition cards on scroll/resize
+  const reposition = () => {
+    if (_gutterRaf) cancelAnimationFrame(_gutterRaf);
+    _gutterRaf = requestAnimationFrame(() => positionCommentCards());
+  };
+  window.addEventListener('scroll', reposition, { passive: true });
+  window.addEventListener('resize', reposition, { passive: true });
 }
 
-function repositionCommentCard() {
-  if (!activeCommentTaskId) return;
-  const taskEl = document.getElementById('task-' + activeCommentTaskId);
-  const card = document.getElementById('commentCard');
-  if (!taskEl || !card) return;
+function updateCommentGutter() {
+  initCommentGutter();
 
-  const rect = taskEl.getBoundingClientRect();
-  // If task scrolled out of view, close the card
-  if (rect.bottom < 60 || rect.top > window.innerHeight) {
-    hideCommentCard();
-    return;
+  // Remove old cards
+  document.querySelectorAll('.comment-card').forEach(el => el.remove());
+
+  const allComments = state.comments || {};
+  const taskIds = new Set(Object.keys(allComments));
+  if (activeComposeTaskId) taskIds.add(activeComposeTaskId);
+
+  const cards = [];
+  taskIds.forEach(taskId => {
+    const taskEl = document.getElementById('task-' + taskId);
+    if (!taskEl || taskEl.offsetParent === null) return;
+    const comments = allComments[taskId] || [];
+    if (comments.length === 0 && taskId !== activeComposeTaskId) return;
+    cards.push({ taskId, comments, isComposing: taskId === activeComposeTaskId });
+  });
+
+  cards.forEach(card => {
+    const el = document.createElement('div');
+    el.className = 'comment-card' + (card.isComposing ? ' composing' : '');
+    el.dataset.taskId = card.taskId;
+
+    let itemsHtml = card.comments.map((c, i) => `
+      <div class="comment-item">
+        <p class="comment-text">${escapeHtml(c.text)}</p>
+        <div class="comment-meta">
+          <span class="comment-time">${formatCommentTime(c.t)}</span>
+          <button class="comment-delete" onclick="event.stopPropagation(); removeComment('${card.taskId}', ${i})">Delete</button>
+        </div>
+      </div>
+    `).join('');
+
+    const composeHtml = card.isComposing ? `
+      <div class="comment-compose">
+        <textarea class="comment-input" id="commentInput" placeholder="Reply..." rows="1"
+          onclick="event.stopPropagation()"
+          onkeydown="handleCommentKeydown(event, '${card.taskId}')"></textarea>
+        <div class="comment-compose-actions">
+          <button class="comment-submit" onclick="event.stopPropagation(); submitComment('${card.taskId}')">Comment</button>
+          ${card.comments.length > 0 ? `<button class="comment-resolve" onclick="event.stopPropagation(); resolveComments('${card.taskId}')">Resolve</button>` : ''}
+        </div>
+      </div>
+    ` : '';
+
+    el.innerHTML = (itemsHtml ? '<div class="comment-list">' + itemsHtml + '</div>' : '') + composeHtml;
+
+    // Prevent card click from closing compose
+    el.addEventListener('click', e => e.stopPropagation());
+
+    document.body.appendChild(el);
+  });
+
+  positionCommentCards();
+
+  // Focus compose input
+  if (activeComposeTaskId) {
+    setTimeout(() => {
+      const input = document.getElementById('commentInput');
+      if (input && document.activeElement.tagName !== 'TEXTAREA') input.focus();
+    }, 30);
   }
+}
 
-  const cardHeight = card.offsetHeight;
-  let top = rect.top;
-  // Keep card within viewport
-  if (top + cardHeight > window.innerHeight - 20) {
-    top = window.innerHeight - cardHeight - 20;
-  }
-  if (top < 60) top = 60;
-  card.style.top = top + 'px';
+function positionCommentCards() {
+  const appEl = document.querySelector('.app');
+  if (!appEl) return;
+  const appRect = appEl.getBoundingClientRect();
+  const cards = Array.from(document.querySelectorAll('.comment-card'));
 
-  // Position to the right of the task
-  const rightEdge = rect.right + 16;
-  const maxLeft = window.innerWidth - 320;
-  card.style.left = Math.min(rightEdge, maxLeft) + 'px';
+  // Position each card at task Y, right of app
+  const positioned = [];
+  cards.forEach(card => {
+    const taskEl = document.getElementById('task-' + card.dataset.taskId);
+    if (!taskEl || taskEl.offsetParent === null) {
+      card.style.display = 'none';
+      return;
+    }
+
+    const taskRect = taskEl.getBoundingClientRect();
+    // Hide if task is offscreen
+    if (taskRect.bottom < 0 || taskRect.top > window.innerHeight + 100) {
+      card.style.opacity = '0';
+      card.style.pointerEvents = 'none';
+      return;
+    }
+
+    card.style.display = 'flex';
+    card.style.opacity = '1';
+    card.style.pointerEvents = 'auto';
+    card.style.left = (appRect.right + 16) + 'px';
+    card._desiredTop = taskRect.top;
+    positioned.push(card);
+  });
+
+  // Sort by desired top, then prevent overlap
+  positioned.sort((a, b) => a._desiredTop - b._desiredTop);
+  let lastBottom = 0;
+  positioned.forEach(card => {
+    let top = card._desiredTop;
+    if (top < lastBottom + 6) top = lastBottom + 6;
+    // Keep in viewport
+    const h = card.offsetHeight || 80;
+    if (top + h > window.innerHeight - 10) top = window.innerHeight - h - 10;
+    if (top < 10) top = 10;
+    card.style.top = top + 'px';
+    lastBottom = top + h;
+  });
 }
 
 function toggleCommentCard(taskId) {
-  if (activeCommentTaskId === taskId) {
-    hideCommentCard();
+  if (activeComposeTaskId === taskId) {
+    closeCompose();
   } else {
-    showCommentCard(taskId);
+    openCompose(taskId);
   }
 }
 
-function showCommentCard(taskId) {
+function openCompose(taskId) {
+  document.querySelectorAll('.task-item.commenting').forEach(el => el.classList.remove('commenting'));
+  activeComposeTaskId = taskId;
   const taskEl = document.getElementById('task-' + taskId);
-  if (!taskEl) return;
-
-  let card = document.getElementById('commentCard');
-  if (!card) card = createCommentCard();
-
-  // Clear previous highlight
-  if (activeCommentTaskId) {
-    const prev = document.getElementById('task-' + activeCommentTaskId);
-    if (prev) prev.classList.remove('commenting');
-  }
-
-  activeCommentTaskId = taskId;
-  taskEl.classList.add('commenting');
-  card.style.display = 'flex';
-
-  renderCommentCard(taskId);
-  repositionCommentCard();
-
-  // Focus textarea after render
-  setTimeout(() => {
-    const input = document.getElementById('commentInput');
-    if (input) input.focus();
-  }, 50);
+  if (taskEl) taskEl.classList.add('commenting');
+  updateCommentGutter();
 }
 
-function hideCommentCard() {
-  const card = document.getElementById('commentCard');
-  if (card) card.style.display = 'none';
-  if (activeCommentTaskId) {
-    const prev = document.getElementById('task-' + activeCommentTaskId);
-    if (prev) prev.classList.remove('commenting');
-  }
-  activeCommentTaskId = null;
+function closeCompose() {
+  document.querySelectorAll('.task-item.commenting').forEach(el => el.classList.remove('commenting'));
+  activeComposeTaskId = null;
+  updateCommentGutter();
 }
 
 function formatCommentTime(isoStr) {
@@ -1403,53 +1459,13 @@ function formatCommentTime(isoStr) {
   } catch { return ''; }
 }
 
-function renderCommentCard(taskId) {
-  const card = document.getElementById('commentCard');
-  if (!card) return;
-  const comments = (state.comments && state.comments[taskId]) || [];
-
-  let commentsHtml = '';
-  comments.forEach((c, i) => {
-    commentsHtml += `
-      <div class="comment-item">
-        <p class="comment-text">${escapeHtml(c.text)}</p>
-        <div class="comment-meta">
-          <span class="comment-time">${formatCommentTime(c.t)}</span>
-          <button class="comment-delete" onclick="event.stopPropagation(); removeComment('${taskId}', ${i})">Delete</button>
-        </div>
-      </div>
-    `;
-  });
-
-  const resolveBtn = comments.length > 0
-    ? `<button class="comment-resolve" onclick="resolveComments('${taskId}')">Resolve all</button>`
-    : '';
-
-  card.innerHTML = `
-    <div class="comment-header">
-      <span class="comment-title">Comments</span>
-      <button class="comment-close" onclick="hideCommentCard()">×</button>
-    </div>
-    ${commentsHtml
-      ? '<div class="comment-list">' + commentsHtml + '</div>'
-      : '<p class="comment-empty">No comments yet</p>'}
-    <div class="comment-compose">
-      <textarea class="comment-input" id="commentInput" placeholder="Add a comment..." rows="2"
-        onkeydown="handleCommentKeydown(event, '${taskId}')"></textarea>
-      <div class="comment-compose-actions">
-        <button class="comment-submit" onclick="submitComment('${taskId}')">Comment</button>
-        ${resolveBtn}
-      </div>
-    </div>
-  `;
-}
-
 function handleCommentKeydown(e, taskId) {
+  e.stopPropagation();
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
     submitComment(taskId);
   } else if (e.key === 'Escape') {
-    hideCommentCard();
+    closeCompose();
   }
 }
 
@@ -1461,11 +1477,10 @@ function submitComment(taskId) {
 
   if (!state.comments) state.comments = {};
   if (!state.comments[taskId]) state.comments[taskId] = [];
-  const timestamp = new Date().toISOString();
-  state.comments[taskId].push({ text, t: timestamp });
+  state.comments[taskId].push({ text, t: new Date().toISOString() });
   postEvent({ op: 'comment_add', id: taskId, v: text });
 
-  renderCommentCard(taskId);
+  updateCommentGutter();
   updateCommentIndicators();
   showToast('💬 Comment added');
 }
@@ -1474,13 +1489,10 @@ function removeComment(taskId, idx) {
   if (!state.comments || !state.comments[taskId]) return;
   postEvent({ op: 'comment_rm', id: taskId, idx: idx });
   state.comments[taskId].splice(idx, 1);
-  if (state.comments[taskId].length === 0) {
-    delete state.comments[taskId];
-  }
+  if (state.comments[taskId].length === 0) delete state.comments[taskId];
 
-  renderCommentCard(taskId);
+  updateCommentGutter();
   updateCommentIndicators();
-  showToast('🗑️ Comment deleted');
 }
 
 function resolveComments(taskId) {
@@ -1491,9 +1503,9 @@ function resolveComments(taskId) {
   }
   delete state.comments[taskId];
 
-  hideCommentCard();
+  closeCompose();
   updateCommentIndicators();
-  showToast('✅ Comments resolved');
+  showToast('✅ Resolved');
 }
 
 function updateCommentIndicators() {
