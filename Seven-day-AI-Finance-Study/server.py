@@ -31,6 +31,7 @@ DEFAULT_STATE = {
     "tasks": {},
     "journal": {},
     "timeLog": {},
+    "customResources": {},
     "activeDay": 1,
     "journalDay": 1,
     "startDate": None,

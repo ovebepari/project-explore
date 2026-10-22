@@ -724,6 +724,7 @@ const DEFAULT_STATE = {
   tasks: {},
   journal: {},
   timeLog: {},
+  customResources: {},
   activeDay: 1,
   journalDay: 1,
   startDate: null,
@@ -838,17 +839,42 @@ function renderPanels() {
       block.tasks.forEach(task => {
         const checked = state.tasks[task.id] ? 'checked' : '';
         const doneClass = state.tasks[task.id] ? 'done' : '';
+        const builtInRes = task.resources || [];
+        const customRes = (state.customResources && state.customResources[task.id]) || [];
         let resourceHtml = '';
-        if (task.resources && task.resources.length) {
+        if (builtInRes.length || customRes.length) {
           resourceHtml = '<div class="task-resources">';
-          task.resources.forEach(r => {
+          builtInRes.forEach(r => {
             resourceHtml += `<a href="${r.url}" target="_blank" rel="noopener" class="resource-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               ${r.label}
             </a>`;
           });
+          customRes.forEach((r, idx) => {
+            resourceHtml += `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="resource-link custom-resource" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              ${escapeHtml(r.label)}
+              <span class="resource-remove" onclick="event.preventDefault();event.stopPropagation();removeCustomResource('${task.id}', ${idx})" title="Remove resource">×</span>
+            </a>`;
+          });
           resourceHtml += '</div>';
         }
+        resourceHtml += `
+          <div class="add-resource-wrapper" onclick="event.stopPropagation()">
+            <button class="add-resource-btn" onclick="showAddResourceForm('${task.id}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Resource
+            </button>
+            <div class="add-resource-form" id="resource-form-${task.id}" style="display:none">
+              <input type="text" placeholder="Label (e.g. My Notes)" class="resource-input" id="resource-label-${task.id}" onkeydown="handleResourceKeydown(event, '${task.id}')">
+              <input type="text" placeholder="https://example.com" class="resource-input" id="resource-url-${task.id}" onkeydown="handleResourceKeydown(event, '${task.id}')">
+              <div class="resource-form-actions">
+                <button class="resource-form-btn save" onclick="addCustomResource('${task.id}')">Save</button>
+                <button class="resource-form-btn cancel" onclick="hideAddResourceForm('${task.id}')">Cancel</button>
+              </div>
+            </div>
+          </div>
+        `;
 
         html += `
           <label class="task-item ${doneClass}" data-task="${task.id}">
@@ -1007,6 +1033,78 @@ function calculateStreak() {
     else break;
   }
   return streak;
+}
+
+// ===== CUSTOM RESOURCES =====
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function showAddResourceForm(taskId) {
+  // Hide any other open forms first
+  document.querySelectorAll('.add-resource-form').forEach(f => f.style.display = 'none');
+  const form = document.getElementById('resource-form-' + taskId);
+  if (form) {
+    form.style.display = 'flex';
+    const labelInput = document.getElementById('resource-label-' + taskId);
+    if (labelInput) setTimeout(() => labelInput.focus(), 50);
+  }
+}
+
+function hideAddResourceForm(taskId) {
+  const form = document.getElementById('resource-form-' + taskId);
+  if (form) {
+    form.style.display = 'none';
+    document.getElementById('resource-label-' + taskId).value = '';
+    document.getElementById('resource-url-' + taskId).value = '';
+  }
+}
+
+function addCustomResource(taskId) {
+  const label = document.getElementById('resource-label-' + taskId).value.trim();
+  const url = document.getElementById('resource-url-' + taskId).value.trim();
+
+  if (!label || !url) {
+    showToast('⚠️ Please enter both a label and URL');
+    return;
+  }
+
+  if (!state.customResources) state.customResources = {};
+  if (!state.customResources[taskId]) state.customResources[taskId] = [];
+
+  state.customResources[taskId].push({ label, url });
+  saveState();
+
+  renderPanels();
+  switchDay(state.activeDay);
+  showToast('🔗 Resource added');
+}
+
+function removeCustomResource(taskId, index) {
+  if (!state.customResources || !state.customResources[taskId]) return;
+
+  state.customResources[taskId].splice(index, 1);
+  if (state.customResources[taskId].length === 0) {
+    delete state.customResources[taskId];
+  }
+  saveState();
+
+  renderPanels();
+  switchDay(state.activeDay);
+  showToast('🗑️ Resource removed');
+}
+
+function handleResourceKeydown(e, taskId) {
+  e.stopPropagation();
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    addCustomResource(taskId);
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    hideAddResourceForm(taskId);
+  }
 }
 
 // ===== DAY NAVIGATION =====
