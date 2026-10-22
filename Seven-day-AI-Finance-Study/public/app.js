@@ -763,7 +763,7 @@ async function loadStateFromServer() {
 // ===== PARTICLES =====
 function createParticles() {
   const container = document.getElementById('particles');
-  const colors = ['#6366f1', '#8b5cf6', '#a78bfa', '#34d399', '#22d3ee', '#fbbf24'];
+  const colors = ['#F5C518', '#d4a017', '#e6b800', '#666', '#888', '#aaa'];
   for (let i = 0; i < 30; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
@@ -1233,7 +1233,7 @@ function updateJournalTabDots() {
 
 // ===== CONFETTI =====
 function fireConfetti() {
-  const colors = ['#6366f1', '#8b5cf6', '#34d399', '#fbbf24', '#22d3ee', '#fb7185', '#a78bfa'];
+  const colors = ['#F5C518', '#e6b800', '#d4a017', '#1a1a1a', '#333', '#F5C518', '#FFD700'];
   for (let i = 0; i < 60; i++) {
     const piece = document.createElement('div');
     piece.className = 'confetti-piece';
