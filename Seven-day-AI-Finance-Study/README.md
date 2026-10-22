@@ -44,10 +44,13 @@ python3 server.py --no-browser   # don't auto-open browser
 Seven-day-AI-Finance-Study/
 ├── server.py                        # Python HTTP server + SQLite API
 ├── tracker.db                       # Your progress (auto-created on first run)
-├── index.html                       # Dashboard UI
-├── style.css                        # Dark/light theme design system
-├── app.js                           # Frontend logic + syllabus data
-├── AI Systems & Finance Syllabus.md # The original syllabus document
+├── public/                          # Frontend assets (served by the server)
+│   ├── index.html                   # Dashboard UI
+│   ├── style.css                    # Dark/light theme design system
+│   └── app.js                       # Frontend logic + syllabus data
+├── docs/                            # Reference documents
+│   ├── AI Systems & Finance Syllabus.md
+│   └── syllabus_analysis.md
 └── README.md
 ```
 

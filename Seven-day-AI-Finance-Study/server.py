@@ -116,7 +116,7 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
     """Serves static files + a tiny JSON REST API for state persistence."""
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(ROOT_DIR), **kwargs)
+        super().__init__(*args, directory=str(ROOT_DIR / "public"), **kwargs)
 
     # ── API routes ──
 
@@ -164,7 +164,7 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         # Only log API calls, not every static file fetch
-        req = args[0] if args else ""
+        req = str(args[0]) if args else ""
         if "/api/" in req:
             sys.stderr.write(
                 f"  ├─ {self.address_string()} {req} {args[1] if len(args) > 1 else ''}\n"
