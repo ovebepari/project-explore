@@ -10,7 +10,7 @@ function toggleTheme() {
   applyTheme(next);
   if (state) {
     state.theme = next;
-    saveState();
+    postEvent({ op: 'set', k: 'theme', v: next });
   }
 }
 
@@ -732,18 +732,13 @@ const DEFAULT_STATE = {
 };
 
 let state = { ...DEFAULT_STATE };
-let _saveTimeout = null;
 
-function saveState() {
-  // Debounce — batch rapid clicks into one API call (300ms)
-  if (_saveTimeout) clearTimeout(_saveTimeout);
-  _saveTimeout = setTimeout(() => {
-    fetch('/api/state', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
-    }).catch(err => console.error('Failed to save state', err));
-  }, 300);
+function postEvent(event) {
+  fetch('/api/event', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(event)
+  }).catch(err => console.error('Failed to post event', err));
 }
 
 async function loadStateFromServer() {
@@ -908,10 +903,11 @@ function toggleBlock(header) {
 // ===== TOGGLE TASK =====
 function toggleTask(taskId, checkbox) {
   state.tasks[taskId] = checkbox.checked;
+  postEvent({ op: 'task', id: taskId, v: checkbox.checked });
   if (!state.startDate && checkbox.checked) {
     state.startDate = new Date().toISOString();
+    postEvent({ op: 'set', k: 'startDate', v: state.startDate });
   }
-  saveState();
 
   // Update label
   const label = checkbox.closest('.task-item');
@@ -1075,7 +1071,7 @@ function addCustomResource(taskId) {
   if (!state.customResources[taskId]) state.customResources[taskId] = [];
 
   state.customResources[taskId].push({ label, url });
-  saveState();
+  postEvent({ op: 'res_add', id: taskId, label: label, url: url });
 
   renderPanels();
   switchDay(state.activeDay);
@@ -1085,11 +1081,11 @@ function addCustomResource(taskId) {
 function removeCustomResource(taskId, index) {
   if (!state.customResources || !state.customResources[taskId]) return;
 
+  postEvent({ op: 'res_rm', id: taskId, idx: index });
   state.customResources[taskId].splice(index, 1);
   if (state.customResources[taskId].length === 0) {
     delete state.customResources[taskId];
   }
-  saveState();
 
   renderPanels();
   switchDay(state.activeDay);
@@ -1110,7 +1106,7 @@ function handleResourceKeydown(e, taskId) {
 // ===== DAY NAVIGATION =====
 function switchDay(day) {
   state.activeDay = day;
-  saveState();
+  postEvent({ op: 'set', k: 'activeDay', v: day });
 
   // Update pills
   document.querySelectorAll('.day-pill').forEach(pill => {
@@ -1162,7 +1158,7 @@ function stopTimer() {
   const day = parseInt(document.getElementById('timerDay').value);
   if (!state.timeLog[day]) state.timeLog[day] = 0;
   state.timeLog[day] += timerSeconds;
-  saveState();
+  postEvent({ op: 'time', day: day, v: timerSeconds });
 
   showToast(`⏱ Logged ${formatTime(timerSeconds)} to Day ${day}`);
 
@@ -1199,7 +1195,7 @@ function switchJournalDay(day) {
 
   currentJournalDay = day;
   state.journalDay = day;
-  saveState();
+  postEvent({ op: 'set', k: 'journalDay', v: day });
 
   document.querySelectorAll('.journal-tab').forEach(tab => {
     tab.classList.toggle('active', parseInt(tab.dataset.jday) === day);
@@ -1216,7 +1212,7 @@ function saveJournalEntry() {
   } else {
     delete state.journal[currentJournalDay];
   }
-  saveState();
+  postEvent({ op: 'journal', day: currentJournalDay, v: text });
   updateJournalTabDots();
 }
 
