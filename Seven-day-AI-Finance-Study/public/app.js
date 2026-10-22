@@ -725,6 +725,7 @@ const DEFAULT_STATE = {
   journal: {},
   timeLog: {},
   customResources: {},
+  comments: {},
   activeDay: 1,
   journalDay: 1,
   startDate: null,
@@ -871,13 +872,20 @@ function renderPanels() {
           </div>
         `;
 
+        const commentCount = (state.comments && state.comments[task.id] && state.comments[task.id].length) || 0;
+        const hasComments = commentCount > 0 ? 'has-comments' : '';
+
         html += `
-          <label class="task-item ${doneClass}" data-task="${task.id}">
+          <label class="task-item ${doneClass}" data-task="${task.id}" id="task-${task.id}">
             <input type="checkbox" class="task-checkbox" ${checked} onchange="toggleTask('${task.id}', this)">
             <div class="task-info">
               <span class="task-text">${task.text}</span>
               ${resourceHtml}
             </div>
+            <button class="comment-trigger ${hasComments}" data-task-id="${task.id}" onclick="event.preventDefault(); event.stopPropagation(); toggleCommentCard('${task.id}')" title="Comment">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span class="comment-count">${commentCount || ''}</span>
+            </button>
           </label>
         `;
       });
@@ -1274,6 +1282,233 @@ async function resetAll() {
   switchDay(1);
   switchJournalDay(1);
   showToast('♻️ All progress reset');
+}
+
+// ===== COMMENTS (Google Docs style) =====
+let activeCommentTaskId = null;
+
+function createCommentCard() {
+  const card = document.createElement('div');
+  card.className = 'comment-card';
+  card.id = 'commentCard';
+  card.style.display = 'none';
+  document.body.appendChild(card);
+
+  // Prevent clicks inside card from propagating to document close handler
+  card.addEventListener('click', e => e.stopPropagation());
+
+  // Close on click outside
+  document.addEventListener('click', e => {
+    if (card.style.display !== 'none' &&
+        !card.contains(e.target) &&
+        !e.target.closest('.comment-trigger')) {
+      hideCommentCard();
+    }
+  });
+
+  // Reposition on scroll
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    if (card.style.display === 'none') return;
+    if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
+    scrollTimeout = requestAnimationFrame(() => repositionCommentCard());
+  }, { passive: true });
+
+  return card;
+}
+
+function repositionCommentCard() {
+  if (!activeCommentTaskId) return;
+  const taskEl = document.getElementById('task-' + activeCommentTaskId);
+  const card = document.getElementById('commentCard');
+  if (!taskEl || !card) return;
+
+  const rect = taskEl.getBoundingClientRect();
+  // If task scrolled out of view, close the card
+  if (rect.bottom < 60 || rect.top > window.innerHeight) {
+    hideCommentCard();
+    return;
+  }
+
+  const cardHeight = card.offsetHeight;
+  let top = rect.top;
+  // Keep card within viewport
+  if (top + cardHeight > window.innerHeight - 20) {
+    top = window.innerHeight - cardHeight - 20;
+  }
+  if (top < 60) top = 60;
+  card.style.top = top + 'px';
+
+  // Position to the right of the task
+  const rightEdge = rect.right + 16;
+  const maxLeft = window.innerWidth - 320;
+  card.style.left = Math.min(rightEdge, maxLeft) + 'px';
+}
+
+function toggleCommentCard(taskId) {
+  if (activeCommentTaskId === taskId) {
+    hideCommentCard();
+  } else {
+    showCommentCard(taskId);
+  }
+}
+
+function showCommentCard(taskId) {
+  const taskEl = document.getElementById('task-' + taskId);
+  if (!taskEl) return;
+
+  let card = document.getElementById('commentCard');
+  if (!card) card = createCommentCard();
+
+  // Clear previous highlight
+  if (activeCommentTaskId) {
+    const prev = document.getElementById('task-' + activeCommentTaskId);
+    if (prev) prev.classList.remove('commenting');
+  }
+
+  activeCommentTaskId = taskId;
+  taskEl.classList.add('commenting');
+  card.style.display = 'flex';
+
+  renderCommentCard(taskId);
+  repositionCommentCard();
+
+  // Focus textarea after render
+  setTimeout(() => {
+    const input = document.getElementById('commentInput');
+    if (input) input.focus();
+  }, 50);
+}
+
+function hideCommentCard() {
+  const card = document.getElementById('commentCard');
+  if (card) card.style.display = 'none';
+  if (activeCommentTaskId) {
+    const prev = document.getElementById('task-' + activeCommentTaskId);
+    if (prev) prev.classList.remove('commenting');
+  }
+  activeCommentTaskId = null;
+}
+
+function formatCommentTime(isoStr) {
+  if (!isoStr) return '';
+  try {
+    const d = new Date(isoStr);
+    const now = new Date();
+    const diff = now - d;
+    if (diff < 60000) return 'just now';
+    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  } catch { return ''; }
+}
+
+function renderCommentCard(taskId) {
+  const card = document.getElementById('commentCard');
+  if (!card) return;
+  const comments = (state.comments && state.comments[taskId]) || [];
+
+  let commentsHtml = '';
+  comments.forEach((c, i) => {
+    commentsHtml += `
+      <div class="comment-item">
+        <p class="comment-text">${escapeHtml(c.text)}</p>
+        <div class="comment-meta">
+          <span class="comment-time">${formatCommentTime(c.t)}</span>
+          <button class="comment-delete" onclick="event.stopPropagation(); removeComment('${taskId}', ${i})">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+
+  const resolveBtn = comments.length > 0
+    ? `<button class="comment-resolve" onclick="resolveComments('${taskId}')">Resolve all</button>`
+    : '';
+
+  card.innerHTML = `
+    <div class="comment-header">
+      <span class="comment-title">Comments</span>
+      <button class="comment-close" onclick="hideCommentCard()">×</button>
+    </div>
+    ${commentsHtml
+      ? '<div class="comment-list">' + commentsHtml + '</div>'
+      : '<p class="comment-empty">No comments yet</p>'}
+    <div class="comment-compose">
+      <textarea class="comment-input" id="commentInput" placeholder="Add a comment..." rows="2"
+        onkeydown="handleCommentKeydown(event, '${taskId}')"></textarea>
+      <div class="comment-compose-actions">
+        <button class="comment-submit" onclick="submitComment('${taskId}')">Comment</button>
+        ${resolveBtn}
+      </div>
+    </div>
+  `;
+}
+
+function handleCommentKeydown(e, taskId) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    submitComment(taskId);
+  } else if (e.key === 'Escape') {
+    hideCommentCard();
+  }
+}
+
+function submitComment(taskId) {
+  const input = document.getElementById('commentInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (!state.comments) state.comments = {};
+  if (!state.comments[taskId]) state.comments[taskId] = [];
+  const timestamp = new Date().toISOString();
+  state.comments[taskId].push({ text, t: timestamp });
+  postEvent({ op: 'comment_add', id: taskId, v: text });
+
+  renderCommentCard(taskId);
+  updateCommentIndicators();
+  showToast('💬 Comment added');
+}
+
+function removeComment(taskId, idx) {
+  if (!state.comments || !state.comments[taskId]) return;
+  postEvent({ op: 'comment_rm', id: taskId, idx: idx });
+  state.comments[taskId].splice(idx, 1);
+  if (state.comments[taskId].length === 0) {
+    delete state.comments[taskId];
+  }
+
+  renderCommentCard(taskId);
+  updateCommentIndicators();
+  showToast('🗑️ Comment deleted');
+}
+
+function resolveComments(taskId) {
+  if (!state.comments || !state.comments[taskId]) return;
+  const count = state.comments[taskId].length;
+  for (let i = count - 1; i >= 0; i--) {
+    postEvent({ op: 'comment_rm', id: taskId, idx: i });
+  }
+  delete state.comments[taskId];
+
+  hideCommentCard();
+  updateCommentIndicators();
+  showToast('✅ Comments resolved');
+}
+
+function updateCommentIndicators() {
+  document.querySelectorAll('.comment-trigger').forEach(trigger => {
+    const taskId = trigger.dataset.taskId;
+    const count = (state.comments && state.comments[taskId] && state.comments[taskId].length) || 0;
+    const badge = trigger.querySelector('.comment-count');
+    if (count > 0) {
+      trigger.classList.add('has-comments');
+      if (badge) badge.textContent = count;
+    } else {
+      trigger.classList.remove('has-comments');
+      if (badge) badge.textContent = '';
+    }
+  });
 }
 
 // ===== INIT =====

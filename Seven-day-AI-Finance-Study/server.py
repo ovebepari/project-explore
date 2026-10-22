@@ -31,6 +31,7 @@ DEFAULT_STATE = {
     "journal": {},
     "timeLog": {},
     "customResources": {},
+    "comments": {},
     "activeDay": 1,
     "journalDay": 1,
     "startDate": None,
@@ -89,6 +90,23 @@ def apply_event(state, event):
                 cr[tid].pop(idx)
             if not cr[tid]:
                 del cr[tid]
+    elif op == "comment_add":
+        tid = event["id"]
+        state.setdefault("comments", {})
+        if tid not in state["comments"]:
+            state["comments"][tid] = []
+        state["comments"][tid].append(
+            {"text": event["v"], "t": event.get("t", "")}
+        )
+    elif op == "comment_rm":
+        tid = event["id"]
+        comments = state.get("comments", {})
+        if tid in comments:
+            idx = event["idx"]
+            if 0 <= idx < len(comments[tid]):
+                comments[tid].pop(idx)
+            if not comments[tid]:
+                del comments[tid]
     elif op == "snapshot":
         state.clear()
         state.update(_deep_copy(event["v"]))
@@ -149,7 +167,9 @@ def migrate_from_sqlite():
 
 # ───────────────────────── HTTP Handler ──────────────────────────
 
-VALID_OPS = frozenset(("task", "journal", "time", "set", "res_add", "res_rm"))
+VALID_OPS = frozenset(
+    ("task", "journal", "time", "set", "res_add", "res_rm", "comment_add", "comment_rm")
+)
 
 MIME_OVERRIDES = {
     ".js": "application/javascript",
