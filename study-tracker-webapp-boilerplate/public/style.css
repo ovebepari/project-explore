@@ -1864,6 +1864,55 @@ textarea.add-item-input {
   line-height: 1.4;
 }
 
+/* ===== DIM / FOCUS MODE ===== */
+.btn-theme.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.dim-mode .block-card {
+  opacity: 0.3;
+  filter: blur(1px);
+  transform: scale(0.98);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dim-mode .block-card.focused,
+.dim-mode .block-card:hover {
+  opacity: 1;
+  filter: none;
+  transform: scale(1);
+  box-shadow: 0 0 0 2px var(--accent-glow), var(--shadow-lg);
+}
+
+.dim-mode .block-card.focused {
+  border-color: var(--accent);
+}
+
+.dim-mode .stats-grid {
+  opacity: 0.25;
+  transition: opacity 0.4s ease;
+}
+
+.dim-mode .stats-grid:hover {
+  opacity: 1;
+}
+
+.dim-mode .journal-section {
+  opacity: 0.2;
+  transition: opacity 0.4s ease;
+}
+
+.dim-mode .journal-section:hover {
+  opacity: 1;
+}
+
+.dim-mode .day-header {
+  opacity: 0.5;
+  transition: opacity 0.4s ease;
+}
+
 /* ===== TROPHY PILE (completed tasks gravity wall) ===== */
 .trophy-pile {
   position: fixed;
