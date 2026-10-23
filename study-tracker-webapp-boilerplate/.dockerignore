@@ -1,0 +1,11 @@
+db.ndjson
+db.json
+*.db
+*.db.*
+__pycache__
+*.pyc
+.git
+.gitignore
+README.md
+Dockerfile
+.dockerignore

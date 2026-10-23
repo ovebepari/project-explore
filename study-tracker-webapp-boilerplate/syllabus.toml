@@ -1,0 +1,96 @@
+# ═══════════════════════════════════════════════════════════════
+# Study Tracker — Syllabus Configuration
+# ═══════════════════════════════════════════════════════════════
+# Edit this file to define your study plan. The server reads it
+# on first startup to initialize the tracker. Dynamic changes
+# (added days, blocks, tasks) are persisted in db.ndjson.
+#
+# To re-initialize from this file, delete db.ndjson and restart.
+#
+# Structure:
+#   [meta]                  — App title and subtitle
+#   [[days]]                — One entry per study day
+#   [[days.blocks]]         — Time blocks within a day
+#   [[days.blocks.tasks]]   — Individual tasks (checkboxes)
+# ═══════════════════════════════════════════════════════════════
+
+[meta]
+title = "Study Tracker"
+subtitle = "7-Day Sprint"
+
+# ── Day 1 ──────────────────────────────────────────────────────
+[[days]]
+title = "Day 1: Introduction & Foundations"
+subtitle = "Getting started — core concepts and first steps"
+label = "Foundations"
+
+[[days.blocks]]
+title = "Morning — Core Concepts"
+badge = "morning"
+icon = "☀️"
+
+[[days.blocks.tasks]]
+text = "Read Chapter 1: Introduction to the subject. Take notes on key definitions."
+resources = [{ label = "Textbook Ch.1", url = "https://example.com/chapter-1" }]
+
+[[days.blocks.tasks]]
+text = "Watch the introductory lecture (45 min). Focus on the 3 main frameworks."
+resources = [{ label = "Lecture Video", url = "https://example.com/lecture-1" }]
+
+[[days.blocks]]
+title = "Afternoon — Hands-On Practice"
+badge = "afternoon"
+icon = "🔧"
+
+[[days.blocks.tasks]]
+text = "Complete Exercise Set 1 (problems 1–10). Show your work."
+
+[[days.blocks.tasks]]
+text = "Build a small project applying the morning concepts."
+
+[[days.blocks]]
+title = "Evening — Review & Reflection"
+badge = "evening"
+icon = "🌙"
+
+[[days.blocks.tasks]]
+text = "Review your notes. Identify gaps. Write down 3 questions."
+
+[[days.blocks]]
+title = "Bonus Deep-Dives"
+badge = "bonus"
+icon = "⭐"
+is_bonus = true
+
+[[days.blocks.tasks]]
+text = "Optional: Read the original research paper behind today's topic."
+
+# ── Day 2 ──────────────────────────────────────────────────────
+[[days]]
+title = "Day 2: Building On Foundations"
+subtitle = "Deepening understanding — connecting concepts"
+label = "Deep Dive"
+
+[[days.blocks]]
+title = "Morning — Theory"
+badge = "morning"
+icon = "☀️"
+
+[[days.blocks.tasks]]
+text = "Read Chapter 2. Map connections to Day 1 material."
+
+[[days.blocks]]
+title = "Afternoon — Application"
+badge = "afternoon"
+icon = "🔧"
+
+[[days.blocks.tasks]]
+text = "Build a project combining Day 1 and Day 2 concepts."
+
+[[days.blocks]]
+title = "Evening — Synthesis"
+badge = "evening"
+icon = "🌙"
+
+[[days.blocks.tasks]]
+text = "Write a summary connecting today's concepts to Day 1."
