@@ -1185,16 +1185,17 @@ textarea.add-item-input {
 /* Button row inside forms */
 .add-item-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-top: 8px;
+  justify-content: flex-end;
 }
 
 /* Save/Cancel buttons (used across all forms) */
 .resource-form-btn {
-  padding: 7px 18px;
+  padding: 6px 16px;
   border-radius: var(--radius-pill);
   font-family: var(--font-body);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   border: 1px solid var(--border-color);
@@ -1203,7 +1204,9 @@ textarea.add-item-input {
   transition: all var(--transition);
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
 .resource-form-btn:hover {
@@ -1236,51 +1239,64 @@ textarea.add-item-input {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  margin-bottom: 16px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
   animation: fadeSlideIn 0.15s ease;
 }
 
 .add-day-form-panel h3 {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .add-day-form-panel .add-item-input {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 /* Add block form */
 .add-block-area {
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .add-block-form {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 14px 18px;
+  padding: 12px 16px;
   margin-top: 8px;
   animation: fadeSlideIn 0.15s ease;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.add-block-form .add-item-input {
+  flex: 1;
+  min-width: 180px;
+  margin: 0;
 }
 
 .add-block-options {
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 6px;
   align-items: center;
 }
 
 .add-block-select {
   font-family: var(--font-body);
-  font-size: 0.78rem;
-  padding: 6px 28px 6px 12px;
+  font-size: 0.75rem;
+  padding: 6px 28px 6px 10px;
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-pill);
   color: var(--text-primary);
+}
+
+.add-block-form .add-item-actions {
+  margin-top: 0;
 }
 
 /* Add task form */
@@ -1289,8 +1305,12 @@ textarea.add-item-input {
 }
 
 .add-task-form {
-  padding: 8px 0;
+  padding: 6px 0;
   animation: fadeSlideIn 0.15s ease;
+}
+
+.add-task-form .add-item-input {
+  margin-bottom: 0;
 }
 
 /* ===== INLINE COMMENTS ===== */
