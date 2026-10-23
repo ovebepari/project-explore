@@ -1204,9 +1204,12 @@ textarea.add-item-input {
   transition: all var(--transition);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   white-space: nowrap;
   line-height: 1.4;
+  min-width: 72px;
+  height: 32px;
 }
 
 .resource-form-btn:hover {
