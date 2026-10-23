@@ -52,3 +52,4 @@
 {"op": "set", "k": "activeDay", "v": 3, "t": "2026-10-23T13:13:58Z"}
 {"op": "set", "k": "activeDay", "v": 4, "t": "2026-10-23T13:13:59Z"}
 {"op": "comment_add", "id": "d4m1", "v": "asfasdf", "t": "2026-10-23T13:15:59Z"}
+{"op": "snapshot", "v": {"tasks": {"d1m1": true, "d1e2": true, "d2e1": true, "d2e2": true, "d2a4": true, "d2a1": true, "d3m1": true, "d3m2": true, "d3a1": true, "d3a2": true, "d3e2": true, "d4m1": true, "d4m2": true}, "journal": {}, "timeLog": {}, "customResources": {"d3m2": [{"label": "Getting Started with CUDA", "url": "https://developer.nvidia.com/blog/cuda-refresher-getting-started-with-cuda/"}]}, "comments": {"d3m1": [{"text": "SIMD vs SIMT, SIMD can be found in CPUs, SIMT is in GPUs", "t": "2026-10-22T03:45:16Z"}], "d4m1": [{"text": "asfasdf", "t": "2026-10-23T13:15:59Z"}]}, "activeDay": 4, "journalDay": 1, "startDate": "2026-10-22T03:09:29.507Z", "theme": "dark"}, "t": "2026-10-23T13:48:20Z"}
