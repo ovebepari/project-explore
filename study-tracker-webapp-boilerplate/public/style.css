@@ -1,19 +1,19 @@
-/* ===== DESIGN TOKENS — ANTHROPIC-INSPIRED ===== */
+/* ===== DESIGN TOKENS — LEAF GREEN ===== */
 :root {
-  /* Warm cream palette (default — light) */
-  --bg-primary: #F5F0E8;
-  --bg-secondary: #EDE8DF;
+  /* Soft sage palette (default — light) */
+  --bg-primary: #F0F4F1;
+  --bg-secondary: #E6EBE8;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #FDFCFA;
-  --bg-surface: #EEEAE2;
+  --bg-card-hover: #F7FAF8;
+  --bg-surface: #E8EDE9;
 
-  /* Accent — warm sienna/brown */
-  --accent: #B8562A;
-  --accent-hover: #9E4A23;
-  --accent-dim: rgba(184, 86, 42, 0.08);
-  --accent-glow: rgba(184, 86, 42, 0.15);
+  /* Accent — leaf green */
+  --accent: #3A7D44;
+  --accent-hover: #2D6636;
+  --accent-dim: rgba(58, 125, 68, 0.08);
+  --accent-glow: rgba(58, 125, 68, 0.15);
   --accent-text: #ffffff;
-  --accent-gradient: linear-gradient(135deg, #C4713B, #B8562A, #9E4A23);
+  --accent-gradient: linear-gradient(135deg, #4A9A56, #3A7D44, #2D6636);
 
   /* Functional */
   --green: #2D7A4F;
@@ -22,15 +22,15 @@
   --red-dim: rgba(192, 57, 43, 0.06);
 
   /* Text */
-  --text-primary: #1A1A1A;
-  --text-secondary: #5A5A5A;
-  --text-muted: #8A8A8A;
-  --text-dim: #B5B5B5;
+  --text-primary: #1A1F1B;
+  --text-secondary: #4A5A4E;
+  --text-muted: #7A8A7E;
+  --text-dim: #AAB5AE;
 
   /* Borders */
-  --border-color: #D6D1C9;
-  --border-hover: #C0BAB0;
-  --border-active: #B8562A;
+  --border-color: #C8D1CB;
+  --border-hover: #B0BCB4;
+  --border-active: #3A7D44;
 
   /* Grid dots */
   --dot-color: transparent;
@@ -41,7 +41,7 @@
   --radius-lg: 12px;
   --radius-pill: 100px;
 
-  /* Shadows — layered warm */
+  /* Shadows — layered */
   --shadow: 0 1px 3px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
   --shadow-lg: 0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
@@ -57,32 +57,32 @@
 
 /* ===== DARK THEME ===== */
 [data-theme="dark"] {
-  --bg-primary: #1C1B19;
-  --bg-secondary: #242320;
-  --bg-card: #2A2926;
-  --bg-card-hover: #333230;
-  --bg-surface: #222120;
+  --bg-primary: #1A1E1B;
+  --bg-secondary: #212621;
+  --bg-card: #282D28;
+  --bg-card-hover: #303530;
+  --bg-surface: #232823;
 
-  --accent: #D4804A;
-  --accent-hover: #E6935F;
-  --accent-dim: rgba(212, 128, 74, 0.12);
-  --accent-glow: rgba(212, 128, 74, 0.20);
-  --accent-text: #1a1a1a;
-  --accent-gradient: linear-gradient(135deg, #E6935F, #D4804A, #B8562A);
+  --accent: #5CAE6E;
+  --accent-hover: #72C084;
+  --accent-dim: rgba(92, 174, 110, 0.12);
+  --accent-glow: rgba(92, 174, 110, 0.20);
+  --accent-text: #1a1e1b;
+  --accent-gradient: linear-gradient(135deg, #72C084, #5CAE6E, #3A7D44);
 
-  --green: #4CAF7A;
-  --green-dim: rgba(76, 175, 122, 0.10);
+  --green: #5CAE6E;
+  --green-dim: rgba(92, 174, 110, 0.10);
   --red: #E05D50;
   --red-dim: rgba(224, 93, 80, 0.10);
 
-  --text-primary: #E8E4DC;
-  --text-secondary: #A09A90;
-  --text-muted: #706A60;
-  --text-dim: #4A4640;
+  --text-primary: #E0E8E2;
+  --text-secondary: #95A89A;
+  --text-muted: #607068;
+  --text-dim: #404A44;
 
-  --border-color: #3A3835;
-  --border-hover: #504E4A;
-  --border-active: #D4804A;
+  --border-color: #374038;
+  --border-hover: #4A5548;
+  --border-active: #5CAE6E;
 
   --shadow: 0 1px 3px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
@@ -330,18 +330,18 @@ h1.editing .inline-edit-input {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(245, 240, 232, 0.85);
+  background: rgba(240, 244, 241, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(214, 209, 201, 0.6);
+  border-bottom: 1px solid rgba(200, 209, 203, 0.6);
   padding: 16px 0;
   margin-bottom: 24px;
   transition: background var(--transition);
 }
 
 [data-theme="dark"] .header {
-  background: rgba(28, 27, 25, 0.85);
-  border-bottom-color: rgba(58, 56, 53, 0.6);
+  background: rgba(26, 30, 27, 0.85);
+  border-bottom-color: rgba(55, 64, 56, 0.6);
 }
 
 .header-content {
