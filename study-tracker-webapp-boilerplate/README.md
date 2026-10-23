@@ -29,9 +29,9 @@ Open **http://localhost:8080**
 ### Without Docker
 
 ```bash
-python3 server.py                     # http://localhost:8080
-python3 server.py --port 3000         # custom port
-python3 server.py --syllabus path.toml  # custom syllabus
+python3 server.py                      # http://localhost:8080
+python3 server.py --port 3000          # custom port
+python3 server.py --syllabus path.toml # custom syllabus
 ```
 
 Requires Python 3.6+ — zero external dependencies.
@@ -58,6 +58,35 @@ Requires Python 3.6+ — zero external dependencies.
 2. **`server.py`** parses it on first startup and serves a single-page app
 3. **`db.ndjson`** stores all changes as an append-only event log
 4. **Browser UI** renders everything dynamically — add days, tasks, comments on the fly
+
+---
+
+## Features
+
+### Core
+
+| Feature | Description |
+|---------|-------------|
+| ✅ **Checkboxes** | Track task completion per day |
+| ➕ **Dynamic CRUD** | Add/edit/remove days, blocks, tasks on the fly |
+| 💬 **Comments** | Add inline comments to any task |
+| ⏱ **Timer** | Session timer with per-day time logging |
+| 📓 **Journal** | Per-day journal/notes section |
+| 🔗 **Resources** | Attach links to tasks (built-in or custom) |
+| ✏️ **Inline Edit** | Click any text to edit — title, subtitle, days, blocks, tasks |
+| 📦 **Export/Import** | State (JSON), Syllabus (TOML), Events (NDJSON) |
+
+### Visual & UX
+
+| Feature | Description |
+|---------|-------------|
+| 🎨 **Anthropic-inspired UI** | Warm cream palette, editorial typography, frosted glass header |
+| 🌗 **Dark/Light** | Theme toggle with full dark mode support |
+| 🎉 **Celebrations** | Khan Academy-style full-page particle burst on task completion |
+| 🏆 **Trophy Pile** | Completed tasks accumulate at bottom-left as gravity-stacked chips (localStorage) |
+| ✨ **Micro-animations** | Checkbox bounce, card hover lift, accent bar on task hover, shimmer progress bar |
+| 📊 **Progress bars** | Gradient-filled with shimmer animation, per-day and overall |
+| 🔥 **Streak counter** | Consecutive day completion tracker |
 
 ---
 
@@ -119,8 +148,6 @@ volumes:
 ```
 
 ### Environment & CLI Flags
-
-The server accepts these flags (set via Docker CMD override if needed):
 
 | Flag | Default | Description |
 |------|---------|-------------|
@@ -184,24 +211,6 @@ Start with a minimal syllabus (or even empty), then use the **+ ADD DAY**, **+ A
 
 ---
 
-## Features
-
-| Feature | Description |
-|---------|-------------|
-| ✅ **Checkboxes** | Track task completion per day |
-| ➕ **Dynamic CRUD** | Add/edit/remove days, blocks, tasks on the fly |
-| 💬 **Comments** | Add inline comments to any task |
-| ⏱ **Timer** | Session timer with per-day time logging |
-| 📓 **Journal** | Per-day journal/notes section |
-| 🔗 **Resources** | Attach links to tasks (built-in or custom) |
-| 🌗 **Dark/Light** | Theme toggle |
-| 📦 **Export/Import** | State (JSON), Syllabus (TOML), Events (NDJSON) |
-| ✏️ **Inline Edit** | Click any text to edit — title, days, blocks, tasks |
-| 🎉 **Confetti** | Celebration when you complete a day |
-| 🔥 **Streak** | Consecutive day completion counter |
-
----
-
 ## Export / Import (Git Workflow)
 
 The app has a **⬇️ Data** button in the header that opens export/import options:
@@ -236,6 +245,17 @@ docker run -p 8080:8080 -v ./data:/data study-tracker
 
 ---
 
+## Trophy Pile
+
+When you check off tasks, their names drop into a **gravity-stacked chip pile** at the bottom-left of the screen. This is your personal "wall of wins" — a visual reminder of how much you've studied.
+
+- 🏆 **Accumulates** as you check off tasks
+- 🎯 **Persists** in `localStorage` (not server-side) across refreshes
+- ✕ **Clearable** via the clear button in the header
+- 🔄 **Unchecking** a task removes it from the pile
+
+---
+
 ## API
 
 | Method | Path | Description |
@@ -261,12 +281,23 @@ docker run -p 8080:8080 -v ./data:/data study-tracker
 ├── Dockerfile         # Docker image definition
 ├── .dockerignore
 ├── .gitignore
+├── README.md
 ├── public/
 │   ├── index.html     # Minimal HTML shell
-│   ├── app.js         # Dynamic SPA (vanilla JS)
-│   └── style.css      # F13-inspired dark/light theme
+│   ├── app.js         # Dynamic SPA (vanilla JS, ~1300 LOC)
+│   └── style.css      # Anthropic-inspired warm cream theme
 └── db.ndjson          # Event log (auto-created, gitignored)
 ```
+
+---
+
+## Tech Stack
+
+- **Backend**: Python 3 stdlib only (zero dependencies) — `http.server` + NDJSON event sourcing
+- **Frontend**: Vanilla JS SPA, no build step, no framework
+- **Styling**: Hand-crafted CSS with CSS custom properties, Inter + JetBrains Mono fonts
+- **Persistence**: Append-only NDJSON write-ahead log (`db.ndjson`)
+- **Container**: `python:3.12-slim` Docker image
 
 ---
 
