@@ -939,7 +939,7 @@ function spawnParticles(x, y, count, opts = {}) {
       gravity,
       drag: 0.97 + Math.random() * 0.02,
       life: 1,
-      decay: 0.012 + Math.random() * 0.015,
+      decay: 0.008 + Math.random() * 0.010,
       shimmer: Math.random() > 0.5,
     });
   }
@@ -1037,21 +1037,38 @@ function fireBurst(checkbox) {
   const rect = checkbox.getBoundingClientRect();
   const x = rect.left + rect.width / 2;
   const y = rect.top + rect.height / 2;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
 
-  // Quick sparkle ring
-  spawnParticles(x, y, 14, {
-    spread: 1.2,
-    sizeMin: 2, sizeMax: 6,
-    speedMin: 3, speedMax: 7,
-    gravity: 0.08,
+  // Main burst — high speed so particles fly across the whole page
+  spawnParticles(x, y, 28, {
+    spread: 2.0,
+    sizeMin: 3, sizeMax: 9,
+    speedMin: 8, speedMax: 18,
+    gravity: 0.06,
   });
 
-  // Extra glitter trail upward
-  spawnParticles(x, y - 4, 6, {
-    spread: 0.8,
-    sizeMin: 1.5, sizeMax: 4,
-    speedMin: 1, speedMax: 4,
-    gravity: -0.03,
+  // Secondary scattered bursts at random positions across the page
+  for (let i = 0; i < 3; i++) {
+    const rx = Math.random() * w;
+    const ry = Math.random() * h * 0.6;
+    setTimeout(() => {
+      spawnParticles(rx, ry, 10, {
+        spread: 1.8,
+        sizeMin: 2, sizeMax: 7,
+        speedMin: 3, speedMax: 9,
+        gravity: 0.07,
+        colors: ['#FFD700', '#F5C518', '#fff', '#FFA500', '#4ECDC4', '#FF6B6B'],
+      });
+    }, 50 + i * 80);
+  }
+
+  // Glitter trail floating upward from checkbox
+  spawnParticles(x, y, 8, {
+    spread: 0.6,
+    sizeMin: 1.5, sizeMax: 5,
+    speedMin: 2, speedMax: 6,
+    gravity: -0.05,
     colors: ['#FFD700', '#F5C518', '#fff', '#FFA500'],
   });
 }
