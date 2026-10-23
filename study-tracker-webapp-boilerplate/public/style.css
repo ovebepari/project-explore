@@ -1312,18 +1312,20 @@ textarea.add-item-input {
   animation: fadeSlideIn 0.15s ease;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
   align-items: flex-end;
 }
 
 .add-task-form .add-item-input {
   flex: 1;
   min-width: 200px;
+  max-width: calc(100% - 180px);
   margin-bottom: 0;
 }
 
 .add-task-form .add-item-actions {
   margin-top: 0;
+  margin-left: auto;
 }
 
 /* ===== INLINE COMMENTS ===== */
