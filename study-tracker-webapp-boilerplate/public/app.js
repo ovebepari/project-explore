@@ -681,8 +681,15 @@ function toggleTask(taskId, checkbox) {
   updateStats();
   if (checkbox.checked) {
     fireBurst(checkbox);
+    // Drop task text into trophy pile
+    const taskText = item.querySelector('.task-text');
+    if (taskText) dropTrophy(taskText.textContent.trim());
     const dayId = findDayForTask(taskId);
     if (dayId && isDayComplete(dayId)) { fireDayComplete(); showToast('🎉 Day complete!'); }
+  } else {
+    // Remove from trophy pile when unchecked
+    const taskText = item.querySelector('.task-text');
+    if (taskText) removeTrophy(taskText.textContent.trim());
   }
 }
 
@@ -1255,6 +1262,92 @@ function importSyllabusFile() {
   input.click();
 }
 
+// ===== TROPHY PILE (completed tasks gravity wall) =====
+const TROPHY_KEY = 'study-tracker-trophies';
+
+function getTrophies() {
+  try { return JSON.parse(localStorage.getItem(TROPHY_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveTrophies(trophies) {
+  localStorage.setItem(TROPHY_KEY, JSON.stringify(trophies));
+}
+
+function ensureTrophyContainer() {
+  let container = document.getElementById('trophyPile');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'trophyPile';
+    container.className = 'trophy-pile';
+    container.innerHTML = `
+      <div class="trophy-header">
+        <span class="trophy-counter"><span id="trophyCount">0</span> done</span>
+        <button class="trophy-clear" onclick="clearTrophies()" title="Clear trophy pile">✕</button>
+      </div>
+      <div class="trophy-chips" id="trophyChips"></div>
+    `;
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+function renderTrophyChips(animate) {
+  const container = ensureTrophyContainer();
+  const chipsEl = document.getElementById('trophyChips');
+  const trophies = getTrophies();
+  document.getElementById('trophyCount').textContent = trophies.length;
+
+  if (trophies.length === 0) {
+    container.classList.remove('visible');
+    return;
+  }
+  container.classList.add('visible');
+
+  // Only render what's there — don't re-render everything for perf
+  chipsEl.innerHTML = '';
+  trophies.forEach((t, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'trophy-chip';
+    if (animate && i === trophies.length - 1) chip.classList.add('trophy-drop');
+    // Random slight rotation for gravity-pile feel
+    const rot = (Math.random() - 0.5) * 8;
+    chip.style.transform = `rotate(${rot}deg)`;
+    // Truncate long texts
+    chip.textContent = t.text.length > 50 ? t.text.slice(0, 47) + '…' : t.text;
+    chip.title = t.text;
+    chipsEl.appendChild(chip);
+  });
+}
+
+function dropTrophy(text) {
+  const trophies = getTrophies();
+  // Avoid duplicates
+  if (trophies.some(t => t.text === text)) return;
+  trophies.push({ text, ts: Date.now() });
+  saveTrophies(trophies);
+  renderTrophyChips(true);
+}
+
+function removeTrophy(text) {
+  let trophies = getTrophies();
+  trophies = trophies.filter(t => t.text !== text);
+  saveTrophies(trophies);
+  renderTrophyChips(false);
+}
+
+function clearTrophies() {
+  if (!confirm('Clear all completed task trophies?')) return;
+  localStorage.removeItem(TROPHY_KEY);
+  renderTrophyChips(false);
+  showToast('🧹 Trophy pile cleared');
+}
+
+function loadTrophyPile() {
+  ensureTrophyContainer();
+  renderTrophyChips(false);
+}
+
 // ===== INIT =====
 async function init() {
   await loadState();
@@ -1264,6 +1357,8 @@ async function init() {
   renderApp();
   // Update page title from meta
   if (state.meta && state.meta.title) document.title = state.meta.title;
+  // Load trophy pile from localStorage
+  loadTrophyPile();
 }
 
 document.addEventListener('DOMContentLoaded', init);
