@@ -452,7 +452,6 @@ function renderTask(task, dayId) {
     <div class="task-info">
       <span class="task-text editable" onclick="event.stopPropagation(); editTaskInline('${task.id}', this)" title="Click to edit">${escapeHtml(task.text)}</span>
       ${resourceHtml}
-      ${commentHtml}
     </div>
     <div class="task-actions">
       <button class="comment-trigger ${hasComments}" onclick="event.preventDefault(); event.stopPropagation(); toggleCommentCard('${task.id}')" title="Comment">
@@ -464,6 +463,7 @@ function renderTask(task, dayId) {
       </button>
       <button class="task-action-btn danger" onclick="event.stopPropagation(); removeTask('${task.id}')" title="Delete task">🗑️</button>
     </div>
+    ${commentHtml}
   </div>`;
 }
 
