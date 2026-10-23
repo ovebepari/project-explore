@@ -104,35 +104,48 @@ body {
   transition: background var(--transition), color var(--transition);
 }
 
-/* Global button/input reset */
+/* Global element resets */
 button, input, select, textarea {
   font-family: var(--font-body);
+  color: var(--text-primary);
 }
 
 button {
-  font-family: var(--font-body);
   cursor: pointer;
-  border: 1px solid var(--border-color);
-  background: var(--bg-card);
-  color: var(--text-primary);
-  padding: 6px 14px;
-  border-radius: var(--radius-pill);
-  font-size: 0.78rem;
-  font-weight: 500;
   transition: all var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-button:hover {
-  border-color: var(--text-primary);
-  background: var(--bg-card-hover);
 }
 
 button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+input, select, textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-dim);
+}
+
+select {
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%238A8A8A' d='M2.5 4.5L6 8l3.5-3.5'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -1239,8 +1252,12 @@ textarea.add-item-input {
   margin-bottom: 8px;
 }
 
-/* Add block form inline */
-.add-block-form-inline {
+/* Add block form */
+.add-block-area {
+  margin-top: 8px;
+}
+
+.add-block-form {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
@@ -1249,8 +1266,29 @@ textarea.add-item-input {
   animation: fadeSlideIn 0.15s ease;
 }
 
-/* Add task form inline */
-.add-task-form-inline {
+.add-block-options {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.add-block-select {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  padding: 6px 28px 6px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  color: var(--text-primary);
+}
+
+/* Add task form */
+.add-task-row {
+  margin-top: 4px;
+}
+
+.add-task-form {
   padding: 8px 0;
   animation: fadeSlideIn 0.15s ease;
 }
