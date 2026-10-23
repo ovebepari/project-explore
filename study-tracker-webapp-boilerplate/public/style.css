@@ -4,14 +4,16 @@
   --bg-primary: #F5F0E8;
   --bg-secondary: #EDE8DF;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #FAF8F5;
+  --bg-card-hover: #FDFCFA;
   --bg-surface: #EEEAE2;
 
   /* Accent — warm sienna/brown */
   --accent: #B8562A;
   --accent-hover: #9E4A23;
   --accent-dim: rgba(184, 86, 42, 0.08);
+  --accent-glow: rgba(184, 86, 42, 0.15);
   --accent-text: #ffffff;
+  --accent-gradient: linear-gradient(135deg, #C4713B, #B8562A, #9E4A23);
 
   /* Functional */
   --green: #2D7A4F;
@@ -39,12 +41,14 @@
   --radius-lg: 12px;
   --radius-pill: 100px;
 
-  /* Shadows — subtle warm */
+  /* Shadows — layered warm */
   --shadow: 0 1px 3px rgba(0,0,0,0.04);
-  --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
 
   /* Transitions */
-  --transition: 0.2s ease;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Font */
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -62,7 +66,9 @@
   --accent: #D4804A;
   --accent-hover: #E6935F;
   --accent-dim: rgba(212, 128, 74, 0.12);
+  --accent-glow: rgba(212, 128, 74, 0.20);
   --accent-text: #1a1a1a;
+  --accent-gradient: linear-gradient(135deg, #E6935F, #D4804A, #B8562A);
 
   --green: #4CAF7A;
   --green-dim: rgba(76, 175, 122, 0.10);
@@ -78,8 +84,9 @@
   --border-hover: #504E4A;
   --border-active: #D4804A;
 
-  --shadow: 0 1px 3px rgba(0,0,0,0.2);
-  --shadow-md: 0 2px 8px rgba(0,0,0,0.25);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
 }
 
 /* ===== RESET & BASE ===== */
@@ -323,11 +330,18 @@ h1.editing .inline-edit-input {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
+  background: rgba(245, 240, 232, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(214, 209, 201, 0.6);
   padding: 16px 0;
   margin-bottom: 24px;
   transition: background var(--transition);
+}
+
+[data-theme="dark"] .header {
+  background: rgba(28, 27, 25, 0.85);
+  border-bottom-color: rgba(58, 56, 53, 0.6);
 }
 
 .header-content {
@@ -429,18 +443,35 @@ h1.editing .inline-edit-input {
 
 /* Overall progress bar */
 .overall-progress {
-  height: 2px;
+  height: 4px;
   background: var(--border-color);
   margin-top: 12px;
-  border-radius: 2px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .overall-progress-bar {
   height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: width 0.4s ease;
+  background: var(--accent-gradient);
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.overall-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2.5s infinite;
+}
+
+@keyframes shimmer {
+  to { left: 100%; }
 }
 
 /* ===== STATS GRID ===== */
@@ -459,12 +490,13 @@ h1.editing .inline-edit-input {
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all var(--transition);
+  transition: all var(--transition-slow);
 }
 
 .stat-card:hover {
   border-color: var(--border-hover);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .stat-card-icon {
@@ -712,6 +744,8 @@ h1.editing .inline-edit-input {
 .day-pill:hover {
   border-color: var(--text-primary);
   color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
 }
 
 .day-pill.active {
@@ -719,6 +753,7 @@ h1.editing .inline-edit-input {
   color: var(--bg-primary);
   border-color: var(--text-primary);
   font-weight: 600;
+  box-shadow: var(--shadow-md);
 }
 
 .day-pill.complete::after {
@@ -824,11 +859,13 @@ h1.editing .inline-edit-input {
   border-radius: var(--radius-lg);
   margin-bottom: 12px;
   overflow: hidden;
-  transition: all var(--transition);
+  transition: all var(--transition-slow);
 }
 
 .block-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
 }
 
 .block-header {
@@ -949,6 +986,25 @@ h1.editing .inline-edit-input {
   border-radius: var(--radius);
 }
 
+.task-item::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transform: scaleY(0);
+  transition: all var(--transition);
+}
+
+.task-item:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
 .task-item.done {
   opacity: 0.55;
 }
@@ -974,11 +1030,19 @@ h1.editing .inline-edit-input {
 
 .task-checkbox:hover {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
 .task-checkbox:checked {
   background: var(--accent);
   border-color: var(--accent);
+  animation: checkBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes checkBounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 .task-checkbox:checked::after {
@@ -1242,14 +1306,15 @@ textarea.add-item-input {
 }
 
 .resource-form-btn.save {
-  background: var(--accent);
+  background: var(--accent-gradient);
   border-color: var(--accent);
   color: var(--accent-text);
+  box-shadow: 0 2px 6px var(--accent-dim);
 }
 
 .resource-form-btn.save:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
 .resource-form-btn.cancel {
