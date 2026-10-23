@@ -680,8 +680,9 @@ function toggleTask(taskId, checkbox) {
   item.classList.toggle('done', checkbox.checked);
   updateStats();
   if (checkbox.checked) {
+    fireBurst(checkbox);
     const dayId = findDayForTask(taskId);
-    if (dayId && isDayComplete(dayId)) { fireConfetti(); showToast('🎉 Day complete!'); }
+    if (dayId && isDayComplete(dayId)) { fireDayComplete(); showToast('🎉 Day complete!'); }
   }
 }
 
@@ -890,22 +891,207 @@ function saveJournalEntry() {
   postEvent({ op: 'journal', dayId, v: text });
 }
 
-// ===== CONFETTI =====
-function fireConfetti() {
-  const colors = ['#F5C518', '#e6b800', '#d4a017', '#1a1a1a', '#333', '#FFD700'];
-  for (let i = 0; i < 60; i++) {
-    const p = document.createElement('div');
-    p.className = 'confetti-piece';
-    p.style.left = Math.random() * 100 + 'vw';
-    p.style.top = '-10px';
-    p.style.background = colors[Math.floor(Math.random() * colors.length)];
-    p.style.animationDelay = (Math.random() * 0.8) + 's';
-    p.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
-    const size = Math.random() * 6 + 4;
-    p.style.width = size + 'px'; p.style.height = size + 'px';
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), 3000);
+// ===== CELEBRATIONS (Khan Academy-style particle bursts) =====
+const BURST_COLORS = [
+  '#F5C518', '#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4',
+  '#45B7D1', '#96E6A1', '#DDA0DD', '#FF85A2', '#FFDAB9',
+];
+
+const SHAPES = ['circle', 'star', 'diamond', 'sparkle'];
+
+function createBurstCanvas() {
+  let canvas = document.getElementById('burstCanvas');
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = 'burstCanvas';
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99999;';
+    document.body.appendChild(canvas);
   }
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  return canvas;
+}
+
+let _particles = [];
+let _animFrame = null;
+
+function spawnParticles(x, y, count, opts = {}) {
+  const spread = opts.spread || 1;
+  const sizeMin = opts.sizeMin || 3;
+  const sizeMax = opts.sizeMax || 8;
+  const speedMin = opts.speedMin || 2;
+  const speedMax = opts.speedMax || 8;
+  const gravity = opts.gravity !== undefined ? opts.gravity : 0.12;
+  const colors = opts.colors || BURST_COLORS;
+
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * spread;
+    const speed = speedMin + Math.random() * (speedMax - speedMin);
+    _particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed * (0.5 + Math.random()),
+      vy: Math.sin(angle) * speed * (0.5 + Math.random()) - 2,
+      size: sizeMin + Math.random() * (sizeMax - sizeMin),
+      color: colors[Math.floor(Math.random() * colors.length)],
+      shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.3,
+      gravity,
+      drag: 0.97 + Math.random() * 0.02,
+      life: 1,
+      decay: 0.012 + Math.random() * 0.015,
+      shimmer: Math.random() > 0.5,
+    });
+  }
+
+  if (!_animFrame) tickBurst();
+}
+
+function drawStar(ctx, cx, cy, r, points, rotation) {
+  ctx.beginPath();
+  for (let i = 0; i < points * 2; i++) {
+    const rad = (i % 2 === 0) ? r : r * 0.4;
+    const a = rotation + (Math.PI * i / points);
+    const px = cx + Math.cos(a) * rad;
+    const py = cy + Math.sin(a) * rad;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+}
+
+function drawSparkle(ctx, cx, cy, r, rotation) {
+  ctx.beginPath();
+  for (let i = 0; i < 4; i++) {
+    const a = rotation + (Math.PI * i / 2);
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+  }
+}
+
+function drawDiamond(ctx, cx, cy, r, rotation) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+  ctx.beginPath();
+  ctx.moveTo(0, -r);
+  ctx.lineTo(r * 0.6, 0);
+  ctx.lineTo(0, r);
+  ctx.lineTo(-r * 0.6, 0);
+  ctx.closePath();
+  ctx.restore();
+}
+
+function tickBurst() {
+  const canvas = createBurstCanvas();
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  _particles = _particles.filter(p => p.life > 0);
+
+  if (_particles.length === 0) {
+    _animFrame = null;
+    canvas.remove();
+    return;
+  }
+
+  for (const p of _particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += p.gravity;
+    p.vx *= p.drag;
+    p.vy *= p.drag;
+    p.rotation += p.rotSpeed;
+    p.life -= p.decay;
+
+    const alpha = Math.max(0, p.life);
+    const shimmerAlpha = p.shimmer ? alpha * (0.6 + 0.4 * Math.sin(Date.now() * 0.02 + p.rotation * 10)) : alpha;
+    ctx.globalAlpha = shimmerAlpha;
+
+    if (p.shape === 'circle') {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    } else if (p.shape === 'star') {
+      drawStar(ctx, p.x, p.y, p.size, 5, p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    } else if (p.shape === 'sparkle') {
+      drawSparkle(ctx, p.x, p.y, p.size * 1.5, p.rotation);
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    } else if (p.shape === 'diamond') {
+      drawDiamond(ctx, p.x, p.y, p.size, p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    }
+  }
+
+  ctx.globalAlpha = 1;
+  _animFrame = requestAnimationFrame(tickBurst);
+}
+
+// Small burst from a checkbox (every task tick)
+function fireBurst(checkbox) {
+  const rect = checkbox.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+
+  // Quick sparkle ring
+  spawnParticles(x, y, 14, {
+    spread: 1.2,
+    sizeMin: 2, sizeMax: 6,
+    speedMin: 3, speedMax: 7,
+    gravity: 0.08,
+  });
+
+  // Extra glitter trail upward
+  spawnParticles(x, y - 4, 6, {
+    spread: 0.8,
+    sizeMin: 1.5, sizeMax: 4,
+    speedMin: 1, speedMax: 4,
+    gravity: -0.03,
+    colors: ['#FFD700', '#F5C518', '#fff', '#FFA500'],
+  });
+}
+
+// Big celebration (full day complete)
+function fireDayComplete() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+
+  // Multiple bursts across the screen
+  const burstPoints = [
+    [w * 0.2, h * 0.3], [w * 0.5, h * 0.2], [w * 0.8, h * 0.3],
+    [w * 0.3, h * 0.5], [w * 0.7, h * 0.5],
+  ];
+
+  burstPoints.forEach(([bx, by], i) => {
+    setTimeout(() => {
+      spawnParticles(bx, by, 30, {
+        spread: 1.5,
+        sizeMin: 3, sizeMax: 10,
+        speedMin: 4, speedMax: 12,
+        gravity: 0.15,
+      });
+    }, i * 120);
+  });
+
+  // Shower from top
+  setTimeout(() => {
+    for (let i = 0; i < 40; i++) {
+      setTimeout(() => {
+        spawnParticles(Math.random() * w, -10, 3, {
+          spread: 0.5,
+          sizeMin: 3, sizeMax: 7,
+          speedMin: 0.5, speedMax: 2,
+          gravity: 0.2,
+          colors: ['#F5C518', '#FFD700', '#e6b800', '#FFA500'],
+        });
+      }, i * 30);
+    }
+  }, 400);
 }
 
 // ===== TOAST =====
