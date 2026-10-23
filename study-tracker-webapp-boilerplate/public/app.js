@@ -172,8 +172,8 @@ function renderApp() {
           <div class="header-stat"><span class="stat-label">Overall</span><span class="stat-value" id="overallPercent">0%</span></div>
           <div class="header-stat"><span class="stat-label">Streak</span><span class="stat-value" id="streakCount">0 🔥</span></div>
           <div class="header-stat"><span class="stat-label">Hours</span><span class="stat-value" id="totalHours">0h</span></div>
-          <button class="btn-theme" id="dimToggle" title="Focus mode — dim other blocks" ${dimMode ? 'class="btn-theme active"' : ''}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>
+          <button class="btn-theme" id="dimToggle" title="Zen mode" ${dimMode ? 'class="btn-theme active"' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 22c-4-4-8-7.5-8-12a8 8 0 0 1 16 0c0 4.5-4 8-8 12z"/><path d="M12 10v6"/><path d="M9 13l3-3 3 3"/></svg>
           </button>
           <button class="btn-theme" id="themeToggle" title="Toggle theme">
             <svg class="theme-icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
