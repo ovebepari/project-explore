@@ -675,6 +675,38 @@ h1.editing .inline-edit-input {
   transition: all var(--transition);
   white-space: nowrap;
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day-pill-number {
+  font-weight: 600;
+  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.day-pill-label {
+  font-size: 0.75rem;
+}
+
+.day-pill-progress {
+  position: absolute;
+  bottom: 0;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: var(--border-color);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.day-pill-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: width 0.3s ease;
 }
 
 .day-pill:hover {
@@ -700,32 +732,24 @@ h1.editing .inline-edit-input {
   color: var(--bg-primary);
 }
 
-.day-nav .add-day-btn {
-  font-family: var(--font-body);
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 6px 14px;
-  border: 1px dashed var(--border-color);
-  border-radius: var(--radius-pill);
+.day-pill.add-day-pill {
+  border-style: dashed;
   background: transparent;
   color: var(--text-muted);
-  cursor: pointer;
-  transition: all var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.day-nav .add-day-btn:hover {
+.day-pill.add-day-pill:hover {
   border-color: var(--accent);
   color: var(--accent);
   border-style: solid;
 }
 
-.day-nav .add-day-btn svg {
+.day-pill.add-day-pill svg {
   width: 14px;
   height: 14px;
 }
