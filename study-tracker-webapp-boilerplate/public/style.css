@@ -104,6 +104,37 @@ body {
   transition: background var(--transition), color var(--transition);
 }
 
+/* Global button/input reset */
+button, input, select, textarea {
+  font-family: var(--font-body);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+button:hover {
+  border-color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 a { color: var(--accent); text-decoration: none; }
 a:hover { color: var(--accent-hover); }
 
@@ -467,44 +498,63 @@ h1.editing .inline-edit-input {
 .timer-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 12px 18px;
+  padding: 14px 20px;
   margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
-.timer-label {
+.timer-display {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
+  gap: 10px;
 }
 
-.timer-label svg {
-  width: 16px;
-  height: 16px;
-  color: var(--accent);
+.timer-icon {
+  color: var(--text-muted);
+  display: flex;
 }
 
-.timer-display {
+.timer-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.timer-time {
   font-family: var(--font-mono);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: 0.04em;
-  min-width: 110px;
-  text-align: center;
+}
+
+.timer-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
 }
 
 .timer-day-select {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.timer-day-select label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.timer-day-select select {
   font-family: var(--font-body);
   font-size: 0.78rem;
   padding: 5px 10px;
@@ -517,32 +567,43 @@ h1.editing .inline-edit-input {
   transition: border-color var(--transition);
 }
 
-.timer-day-select:focus { border-color: var(--accent); }
+.timer-day-select select:focus { border-color: var(--accent); }
 
-.timer-actions {
+.timer-controls {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   margin-left: auto;
 }
 
 .timer-btn {
-  padding: 6px 16px;
+  padding: 7px 18px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-pill);
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition);
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   color: var(--text-primary);
   background: var(--bg-card);
 }
 
 .timer-btn:hover {
   border-color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.timer-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.timer-btn:disabled:hover {
+  border-color: var(--border-color);
+  background: var(--bg-card);
 }
 
 .timer-btn svg {
@@ -550,14 +611,19 @@ h1.editing .inline-edit-input {
   height: 14px;
 }
 
-.timer-btn.primary {
+.timer-btn.start {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--accent-text);
 }
 
-.timer-btn.primary:hover {
+.timer-btn.start:hover {
   background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.timer-btn.pause {
+  border-color: var(--text-muted);
 }
 
 .timer-btn.stop {
