@@ -1913,6 +1913,48 @@ textarea.add-item-input {
   transition: opacity 0.4s ease;
 }
 
+/* Shimmer sweep on focused block text */
+@keyframes zenShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.dim-mode .block-card.focused .task-text {
+  background: linear-gradient(
+    90deg,
+    var(--text-primary) 0%,
+    var(--text-primary) 35%,
+    var(--accent) 50%,
+    var(--text-primary) 65%,
+    var(--text-primary) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: zenShimmer 2.5s ease-in-out infinite;
+}
+
+.dim-mode .block-card.focused .block-title {
+  background: linear-gradient(
+    90deg,
+    var(--text-primary) 0%,
+    var(--text-primary) 35%,
+    var(--accent) 50%,
+    var(--text-primary) 65%,
+    var(--text-primary) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: zenShimmer 3s ease-in-out infinite;
+}
+
 /* ===== TROPHY PILE (completed tasks gravity wall) ===== */
 .trophy-pile {
   position: fixed;
