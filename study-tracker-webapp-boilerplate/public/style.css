@@ -1155,7 +1155,8 @@ h1.editing .inline-edit-input {
 
 /* Inputs in all add forms */
 .add-item-input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 8px 14px;
   font-family: var(--font-body);
   font-size: 0.82rem;
@@ -1255,6 +1256,7 @@ textarea.add-item-input {
 }
 
 .add-day-form-panel .add-item-input {
+  width: 100%;
   margin-bottom: 6px;
 }
 
