@@ -1310,10 +1310,20 @@ textarea.add-item-input {
 .add-task-form {
   padding: 6px 0;
   animation: fadeSlideIn 0.15s ease;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
 }
 
 .add-task-form .add-item-input {
+  flex: 1;
+  min-width: 200px;
   margin-bottom: 0;
+}
+
+.add-task-form .add-item-actions {
+  margin-top: 0;
 }
 
 /* ===== INLINE COMMENTS ===== */
