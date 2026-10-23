@@ -1,1144 +1,903 @@
-// ===== THEME (fast cache to prevent flash — canonical source is SQLite) =====
+// ===== THEME (fast cache to prevent flash) =====
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('theme-cache', theme);  // fast cache only
+  localStorage.setItem('theme-cache', theme);
 }
-
 function toggleTheme() {
   const current = document.documentElement.getAttribute('data-theme') || 'dark';
   const next = current === 'dark' ? 'light' : 'dark';
   applyTheme(next);
-  if (state) {
-    state.theme = next;
-    postEvent({ op: 'set', k: 'theme', v: next });
-  }
+  if (state) { state.theme = next; postEvent({ op: 'set', k: 'theme', v: next }); }
 }
-
-// Apply cached theme immediately to prevent flash on load
 applyTheme(localStorage.getItem('theme-cache') || 'dark');
 
-// ===== SYLLABUS DATA =====
-const SYLLABUS = {
-  1: {
-    title: "Day 1: Linear Algebra, MatMul & Autograd",
-    subtitle: "The Math Kernel — building the foundation of every neural network",
-    blocks: [
-      {
-        id: "d1-morning",
-        title: "Morning — Math Engine",
-        badge: "morning",
-        icon: "☀️",
-        tasks: [
-          {
-            id: "d1m1",
-            text: "Watch 3Blue1Brown: Essence of Linear Algebra (Ch. 1–7). Focus on matrices as linear transformations, dot products as similarity, matmul as composing transformations.",
-            resources: [
-              { label: "3B1B Linear Algebra", url: "https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" }
-            ]
-          },
-          {
-            id: "d1m2",
-            text: "Watch 3B1B Neural Networks Ch. 1–4 (~65 min): What is a neural network, Gradient descent, Backpropagation, Backprop calculus.",
-            resources: [
-              { label: "3B1B Neural Nets", url: "https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "d1-afternoon",
-        title: "Afternoon — Autograd & Backprop",
-        badge: "afternoon",
-        icon: "🔧",
-        tasks: [
-          {
-            id: "d1a1",
-            text: "Watch Karpathy's 'The spelled-out intro to neural networks and backpropagation: building micrograd' (2.5 hrs). Code the 100-line Python autograd engine alongside him.",
-            resources: [
-              { label: "Karpathy micrograd", url: "https://www.youtube.com/watch?v=VMj-3S1tku0" },
-              { label: "micrograd repo", url: "https://github.com/karpathy/micrograd" }
-            ]
-          },
-          {
-            id: "d1a2",
-            text: "Solve Problem Set — Day 1: Cosine similarity by hand, Shape Inspector (matmul dimensions), Chain Rule trace."
-          }
-        ]
-      },
-      {
-        id: "d1-evening",
-        title: "Evening — Finance: Value Creation",
-        badge: "evening",
-        icon: "🌙",
-        tasks: [
-          {
-            id: "d1e1",
-            text: "Read The Personal MBA frameworks: 'Iron Law of the Market' and '12 Standard Forms of Value'.",
-            resources: [
-              { label: "Personal MBA", url: "https://personalmba.com/" }
-            ]
-          },
-          {
-            id: "d1e2",
-            text: "Watch Y Combinator's 'How to Build a Product' (Michael Seibel). Understand why people part with money: reducing friction, saving time, mitigating risk, increasing status.",
-            resources: [
-              { label: "YC How to Build", url: "https://www.youtube.com/watch?v=C27RVio2rOs" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "d1-bonus",
-        title: "Bonus Deep-Dives",
-        badge: "bonus",
-        icon: "⭐",
-        isBonus: true,
-        tasks: [
-          {
-            id: "d1b1",
-            text: "IEEE 754 Formats (FP32 vs FP16 vs BF16 vs FP8): Understand bit-level layout of Sign, Exponent, Mantissa. Why BF16 replaced FP16.",
-          },
-          {
-            id: "d1b2",
-            text: "Einstein Summation (torch.einsum): 20 min learning einsum notation for tensor contractions and batch matmuls.",
-          },
-          {
-            id: "d1b3",
-            text: "Finance: Operating Leverage — high-fixed-cost/low-marginal-cost (software) vs. linear human-labor businesses.",
-          }
-        ]
-      }
-    ]
-  },
-  2: {
-    title: "Day 2: Transformer Internals & Vocabulary Mastery",
-    subtitle: "From attention mechanisms to the full LLM training pipeline",
-    blocks: [
-      {
-        id: "d2-morning",
-        title: "Morning — Architecture (Visual-First)",
-        badge: "morning",
-        icon: "☀️",
-        tasks: [
-          {
-            id: "d2m1",
-            text: "Read 'The Illustrated Transformer' by Jay Alammar (~35 min). Focus on the Decoder half. Track how 1 token embedding becomes Q, K, V vectors.",
-            resources: [
-              { label: "Illustrated Transformer", url: "https://jalammar.github.io/illustrated-transformer/" }
-            ]
-          },
-          {
-            id: "d2m2",
-            text: "Watch 3B1B Ch. 5: 'But what is a GPT? Visual intro to Transformers' (27 min).",
-            resources: [
-              { label: "3B1B Ch.5 GPT", url: "https://www.youtube.com/watch?v=wjZofJX0v4M" }
-            ]
-          },
-          {
-            id: "d2m3",
-            text: "Watch 3B1B Ch. 6: 'Attention in transformers, visually explained' (26 min). Visualize Q×Kᵀ as a token similarity lookup table.",
-            resources: [
-              { label: "3B1B Ch.6 Attention", url: "https://www.youtube.com/watch?v=eMlx5fFNoYc" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "d2-afternoon",
-        title: "Afternoon — LLM Lifecycle & LoRA",
-        badge: "afternoon",
-        icon: "🔧",
-        tasks: [
-          {
-            id: "d2a1",
-            text: "Study the 4-stage pipeline: Base Model (pre-training) → SFT (instruction tuning) → RLHF/DPO (alignment) → LoRA (adaptation).",
-          },
-          {
-            id: "d2a2",
-            text: "Watch Karpathy's 'State of GPT' Microsoft Build talk — conceptual overview of the Pre-training → SFT → RLHF pipeline.",
-            resources: [
-              { label: "State of GPT", url: "https://www.youtube.com/watch?v=bZQun8Y4L2A" }
-            ]
-          },
-          {
-            id: "d2a3",
-            text: "Understand LoRA math: frozen W₀ [4096×4096] + trainable A [4096×r] × B [r×4096]. Calculate compression ratio (r=8 → 0.39% params).",
-          },
-          {
-            id: "d2a4",
-            text: "Study Open Weights vs. Open Source licensing: Llama (restricted) vs. Qwen/Mistral (Apache 2.0) vs. OLMo (true open source).",
-          },
-          {
-            id: "d2a5",
-            text: "Solve Problem Set — Day 2: O(N²) context bomb, LoRA compression ratio, Accounting triage (P&L vs. Cash Flow)."
-          }
-        ]
-      },
-      {
-        id: "d2-evening",
-        title: "Evening — Finance: Accounting as Telemetry",
-        badge: "evening",
-        icon: "🌙",
-        tasks: [
-          {
-            id: "d2e1",
-            text: "Watch MIT 15.401 Ses 1: Introduction & Course Overview (~1hr 15min). Map Balance Sheet to cluster state.",
-            resources: [
-              { label: "MIT 15.401 Playlist", url: "https://www.youtube.com/playlist?list=PLUl4u3cNGP63B2lDhyKOsImI7FjCf6eDn" }
-            ]
-          },
-          {
-            id: "d2e2",
-            text: "Watch MIT 15.401 Ses 2: Present Value Relations I (~1hr 19min). Learn Time Value of Money and PV operator.",
-            resources: [
-              { label: "MIT Ses 2 PV", url: "https://www.youtube.com/watch?v=U03Md5enU-0" }
-            ]
-          },
-          {
-            id: "d2e3",
-            text: "Map: Income Statement = request throughput, Balance Sheet = cluster state snapshot, Cash Flow = actual memory I/O.",
-          }
-        ]
-      },
-      {
-        id: "d2-bonus",
-        title: "Bonus Deep-Dives",
-        badge: "bonus",
-        icon: "⭐",
-        isBonus: true,
-        tasks: [
-          {
-            id: "d2b1",
-            text: "GQA (Grouped-Query Attention) & MQA: How sharing K/V heads across Q heads slashes KV Cache VRAM by 75%.",
-          },
-          {
-            id: "d2b2",
-            text: "RoPE (Rotary Position Embeddings): Encoding token order by rotating Q and K in complex 2D space. NTK-aware scaling / YaRN for 128k+ context.",
-          },
-          {
-            id: "d2b3",
-            text: "MoE (Mixture of Experts): Mixtral/DeepSeek-V3 gating router activating 2 of 8 experts per token — giant intelligence at small inference cost.",
-          },
-          {
-            id: "d2b4",
-            text: "Finance: CapEx vs. OpEx & GPU Depreciation — H100/B200 depreciation over 4–6 years on balance sheets.",
-          }
-        ]
-      }
-    ]
-  },
-  3: {
-    title: "Day 3: GPU Architecture, SIMD & Parallel Computing",
-    subtitle: "From your CPU's AVX-512 to NVIDIA CUDA cores and memory hierarchies",
-    blocks: [
-      {
-        id: "d3-morning",
-        title: "Morning — CPU SIMD to GPU SIMT",
-        badge: "morning",
-        icon: "☀️",
-        tasks: [
-          {
-            id: "d3m1",
-            text: "Compare i5-1135G7 AVX-512 (16 FP32 per cycle) to GPU SIMT (thousands of CUDA cores, 32-thread Warps, Streaming Multiprocessors).",
-          },
-          {
-            id: "d3m2",
-            text: "Read NVIDIA CUDA Refresher blog series. Study GPU hierarchy: HBM (VRAM) → L2 Cache → SRAM (Shared Memory / Registers).",
-            resources: [
-              { label: "CUDA Refresher", url: "https://developer.nvidia.com/blog/tag/cuda-refresher/" }
-            ]
-          },
-          {
-            id: "d3m3",
-            text: "Understand FlashAttention: keeping intermediate matrices in fast SRAM instead of slow HBM round-trips.",
-            resources: [
-              { label: "FlashAttention Paper", url: "https://arxiv.org/abs/2205.14135" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "d3-afternoon",
-        title: "Afternoon — Memory Hierarchy & Roofline",
-        badge: "afternoon",
-        icon: "🔧",
-        tasks: [
-          {
-            id: "d3a1",
-            text: "Study the Roofline Model: Arithmetic Intensity = FLOPS / Memory Bandwidth. RTX 3090 crossover: 142T / 936G ≈ 151 FLOPs/Byte.",
-          },
-          {
-            id: "d3a2",
-            text: "Memorize the hardware cheat sheet numbers: DDR4 ~45 GB/s, 3090 936 GB/s, A100 2039 GB/s, H100 3350 GB/s.",
-          },
-          {
-            id: "d3a3",
-            text: "Solve Problem Set — Day 3: AVX-512 FP32 vs INT8 throughput, The Wrapper Margin Trap (2.5% gross margin!)."
-          }
-        ]
-      },
-      {
-        id: "d3-evening",
-        title: "Evening — Finance: SaaS & AI Unit Economics",
-        badge: "evening",
-        icon: "🌙",
-        tasks: [
-          {
-            id: "d3e1",
-            text: "Study CAC (Customer Acquisition Cost), LTV (Lifetime Value), Gross Margin, Payback Period.",
-          },
-          {
-            id: "d3e2",
-            text: "Calculate why traditional SaaS has 80% gross margins while poorly optimized AI wrappers drop to 30% (GPU inference COGS).",
-          }
-        ]
-      },
-      {
-        id: "d3-bonus",
-        title: "Bonus Deep-Dives",
-        badge: "bonus",
-        icon: "⭐",
-        isBonus: true,
-        tasks: [
-          {
-            id: "d3b1",
-            text: "OpenAI Triton Language: Write Vector Addition & Fused Softmax kernels in Python. Learn kernel fusion to eliminate HBM reads/writes.",
-            resources: [
-              { label: "Triton Tutorials", url: "https://triton-lang.org/main/getting-started/tutorials/index.html" }
-            ]
-          },
-          {
-            id: "d3b2",
-            text: "NVIDIA Nsight Systems (nsys) & PyTorch Profiler: Read GPU execution flamegraphs. Spot 'GPU starvation'.",
-          },
-          {
-            id: "d3b3",
-            text: "Finance: Jevons Paradox in Compute — why making inference 10x cheaper per token causes total GPU spending to increase.",
-          }
-        ]
-      }
-    ]
-  },
-  4: {
-    title: "Day 4: Local CPU Inference on Dell Latitude",
-    subtitle: "Hands-on with llama.cpp, quantization, and your i5-1135G7 / 32GB RAM",
-    blocks: [
-      {
-        id: "d4-morning",
-        title: "Morning — Quantization & Memory Math",
-        badge: "morning",
-        icon: "☀️",
-        tasks: [
-          {
-            id: "d4m1",
-            text: "Master the footprint formula: RAM(GB) ≈ Params(B) × Bytes_per_Param × 1.2. Calculate Q4_K_M sizes for 7B, 14B, 32B, 70B models.",
-          },
-          {
-            id: "d4m2",
-            text: "Understand why CPU inference is memory-bandwidth bound (not compute-bound) at ~45 GB/s DDR4.",
-          },
-          {
-            id: "d4m3",
-            text: "Calculate theoretical decode ceiling: 4.7GB model on 45 GB/s bus → ~9.5 tok/s max.",
-          }
-        ]
-      },
-      {
-        id: "d4-afternoon",
-        title: "Afternoon — Hands-On Lab",
-        badge: "afternoon",
-        icon: "🔧",
-        tasks: [
-          {
-            id: "d4a1",
-            text: "Clone and compile llama.cpp from source with AVX2/AVX-512 flags for Tiger Lake i5.",
-            resources: [
-              { label: "llama.cpp repo", url: "https://github.com/ggerganov/llama.cpp" }
-            ]
-          },
-          {
-            id: "d4a2",
-            text: "Download Llama-3.1-8B-Instruct-Q4_K_M.gguf (~4.9 GB) from HuggingFace.",
-            resources: [
-              { label: "HuggingFace GGUF", url: "https://huggingface.co/models?search=gguf" }
-            ]
-          },
-          {
-            id: "d4a3",
-            text: "Download Qwen-2.5-14B-Instruct-Q4_K_M.gguf (~8.5 GB).",
-          },
-          {
-            id: "d4a4",
-            text: "Run llama-bench: profile CPU thread scaling (-t 4 vs -t 8), RAM allocation, tokens/sec during Prefill vs. Decode.",
-          },
-          {
-            id: "d4a5",
-            text: "Solve Problem Set — Day 4: Will 70B fit in 32GB? Sweet-spot model sizing for your RAM."
-          }
-        ]
-      },
-      {
-        id: "d4-evening",
-        title: "Evening — Finance: Pricing Psychology",
-        badge: "evening",
-        icon: "🌙",
-        tasks: [
-          {
-            id: "d4e1",
-            text: "Read ProfitWell (Patrick Campbell) guide on Value-Based Pricing.",
-          },
-          {
-            id: "d4e2",
-            text: "Learn cost-plus pricing (charging per token) vs. value-metric pricing (charging per resolved ticket / automated PR).",
-          }
-        ]
-      },
-      {
-        id: "d4-bonus",
-        title: "Bonus Deep-Dives",
-        badge: "bonus",
-        icon: "⭐",
-        isBonus: true,
-        tasks: [
-          {
-            id: "d4b1",
-            text: "Intel Iris Xe GPU Offloading: Compile llama.cpp with -DGGML_VULKAN=ON or -DGGML_SYCL=ON, compare iGPU vs CPU.",
-          },
-          {
-            id: "d4b2",
-            text: "Speculative Decoding in llama.cpp: Use a 0.5B draft model alongside 7B target model and measure speedup.",
-          },
-          {
-            id: "d4b3",
-            text: "mmap & Linux Page Cache: Inspect how llama.cpp uses mmap(). Run vmtouch to verify model pages aren't swapped.",
-          },
-          {
-            id: "d4b4",
-            text: "Finance: Price Discrimination & Tiering — Good / Better / Best enterprise tiers (Rate-limited API → VPC → Custom LoRA).",
-          }
-        ]
-      }
-    ]
-  },
-  5: {
-    title: "Day 5: Inference Engineering, vLLM & Vast.ai",
-    subtitle: "GPU inference serving, PagedAttention, and cloud GPU penny-pinching",
-    blocks: [
-      {
-        id: "d5-morning",
-        title: "Morning — Prefill vs. Decode Phases",
-        badge: "morning",
-        icon: "☀️",
-        tasks: [
-          {
-            id: "d5m1",
-            text: "Read 'LLM Inference Unveiled' / Learn Inference book. Study Prefill (compute-bound, TTFT) vs. Decode (memory-bandwidth-bound, ITL).",
-            resources: [
-              { label: "LLM Inference Handbook", url: "https://www.bentoml.com/blog/llm-inference-handbook" }
-            ]
-          },
-          {
-            id: "d5m2",
-            text: "Understand PagedAttention: non-contiguous KV Cache allocation like OS virtual memory paging.",
-          },
-          {
-            id: "d5m3",
-            text: "Study Continuous Batching: loading weights once and multiplying against 32-128 user prompts simultaneously.",
-          }
-        ]
-      },
-      {
-        id: "d5-afternoon",
-        title: "Afternoon — Vast.ai & vLLM Lab",
-        badge: "afternoon",
-        icon: "🔧",
-        tasks: [
-          {
-            id: "d5a1",
-            text: "Load $5 into Vast.ai. Rent a Spot RTX 3090 (24GB) or RTX 4090 for ~$0.15–$0.30/hr.",
-            resources: [
-              { label: "Vast.ai", url: "https://vast.ai/" }
-            ]
-          },
-          {
-            id: "d5a2",
-            text: "Spin up the official vllm/vllm-openai Docker container serving a 7B/8B AWQ quantized model.",
-            resources: [
-              { label: "vLLM Docs", url: "https://docs.vllm.ai/" }
-            ]
-          },
-          {
-            id: "d5a3",
-            text: "Inspect Continuous Batching & KV Cache usage via vLLM's /metrics Prometheus endpoint. Connect to Grafana if possible.",
-          },
-          {
-            id: "d5a4",
-            text: "Tear down the Vast.ai instance immediately after to save cents!",
-          },
-          {
-            id: "d5a5",
-            text: "Solve Problem Set — Day 5: The OOM Mystery (25 users × 8k context × 160KB), API vs. Self-Hosted crossover math."
-          }
-        ]
-      },
-      {
-        id: "d5-evening",
-        title: "Evening — Finance: Time Value of Money",
-        badge: "evening",
-        icon: "🌙",
-        tasks: [
-          {
-            id: "d5e1",
-            text: "Study NPV (Net Present Value), IRR (Internal Rate of Return), and Opportunity Cost.",
-          },
-          {
-            id: "d5e2",
-            text: "Apply to engineering: build in-house vs. buy an API. Evaluate if a 2-month project yields positive ROI.",
-          }
-        ]
-      },
-      {
-        id: "d5-bonus",
-        title: "Bonus Deep-Dives",
-        badge: "bonus",
-        icon: "⭐",
-        isBonus: true,
-        tasks: [
-          {
-            id: "d5b1",
-            text: "Disaggregated Prefill & Decode Serving: Split Prefill onto compute-dense nodes, stream KV Cache over RDMA/RoCEv2 to Decode nodes.",
-          },
-          {
-            id: "d5b2",
-            text: "Guided Decoding / Structured Outputs: Outlines or XGrammar compile JSON Schema into FSMs masking invalid logits — 100% valid JSON.",
-          },
-          {
-            id: "d5b3",
-            text: "Multi-GPU Interconnects: PCIe Gen4 (~32 GB/s) vs. NVLink (600–900 GB/s). Why Tensor Parallelism bottlenecks on consumer PCIe.",
-          },
-          {
-            id: "d5b4",
-            text: "Finance: FinOps & Spot Instance Arbitrage — stateless checkpointing layers for Spot GPU SIGTERM failover.",
-          }
-        ]
-      }
-    ]
-  },
-  6: {
-    title: "Day 6: Vector DBs, Hybrid RAG & Agentic Loops",
-    subtitle: "Qdrant, HNSW, BM25 + dense hybrid search, and building a ReAct agent",
-    blocks: [
-      {
-        id: "d6-morning",
-        title: "Morning — Docker Vector DB Lab",
-        badge: "morning",
-        icon: "☀️",
-        tasks: [
-          {
-            id: "d6m1",
-            text: "Run: docker run -p 6333:6333 qdrant/qdrant",
-            resources: [
-              { label: "Qdrant Docs", url: "https://qdrant.tech/documentation/" }
-            ]
-          },
-          {
-            id: "d6m2",
-            text: "Write a Python script to ingest 1,000 markdown docs using bge-small-en-v1.5 embeddings.",
-            resources: [
-              { label: "bge-small HF", url: "https://huggingface.co/BAAI/bge-small-en-v1.5" }
-            ]
-          },
-          {
-            id: "d6m3",
-            text: "Inspect HNSW index parameters (m, ef_construct). Understand it as a multi-layered skip-list graph.",
-          }
-        ]
-      },
-      {
-        id: "d6-afternoon",
-        title: "Afternoon — Hybrid Search & Agents",
-        badge: "afternoon",
-        icon: "🔧",
-        tasks: [
-          {
-            id: "d6a1",
-            text: "Combine Dense Vector Search (cosine) with Sparse BM25 using Reciprocal Rank Fusion (RRF).",
-          },
-          {
-            id: "d6a2",
-            text: "Build a raw 50-line Python ReAct Agent loop (while True: prompt → LLM JSON tool call → execute tool → append stdout). No LangChain!",
-          },
-          {
-            id: "d6a3",
-            text: "Solve Problem Set — Day 6: Why pure vector search fails for hex error codes, The Infinite Agent Loop (context overflow)."
-          }
-        ]
-      },
-      {
-        id: "d6-evening",
-        title: "Evening — Finance: B2B Sales & Problem Discovery",
-        badge: "evening",
-        icon: "🌙",
-        tasks: [
-          {
-            id: "d6e1",
-            text: "Read 'The Mom Test' (Rob Fitzpatrick) summary. Learn to interview engineers/managers for budget-backed problems.",
-            resources: [
-              { label: "The Mom Test", url: "http://momtestbook.com/" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "d6-bonus",
-        title: "Bonus Deep-Dives",
-        badge: "bonus",
-        icon: "⭐",
-        isBonus: true,
-        tasks: [
-          {
-            id: "d6b1",
-            text: "Binary & Scalar Quantization in Qdrant: Cut RAM 32x using 1-bit compression + XOR/POPCNT, rescore top 50 in full precision.",
-          },
-          {
-            id: "d6b2",
-            text: "Model Context Protocol (MCP): Anthropic's universal USB-C for connecting LLMs to tools via JSON-RPC servers.",
-          },
-          {
-            id: "d6b3",
-            text: "Sandboxing Agent Code: gVisor (runsc) / Firecracker microVMs to stop prompt injection from wiping your host.",
-          },
-          {
-            id: "d6b4",
-            text: "Finance: Switching Costs & Data Moats — Why wrapper startups die; build defensibility via proprietary workflow data.",
-          }
-        ]
-      }
-    ]
-  },
-  7: {
-    title: "Day 7: Production MLOps, Vertex AI & Capstone",
-    subtitle: "CI/CD → CT, model observability, and your SRE Incident RCA Agent",
-    blocks: [
-      {
-        id: "d7-morning",
-        title: "Morning — GCP Vertex AI & MLOps",
-        badge: "morning",
-        icon: "☀️",
-        tasks: [
-          {
-            id: "d7m1",
-            text: "Map CI/CD to Continuous Training (CT) and Evaluation Pipelines. Study Vertex AI Model Garden & Endpoints.",
-            resources: [
-              { label: "Vertex AI Docs", url: "https://cloud.google.com/vertex-ai/docs" }
-            ]
-          },
-          {
-            id: "d7m2",
-            text: "Study LLM Observability: Tracing with Arize Phoenix or Langfuse. Automated evals with RAGAS (Context Precision, Faithfulness).",
-            resources: [
-              { label: "Arize Phoenix", url: "https://phoenix.arize.com/" },
-              { label: "Langfuse", url: "https://langfuse.com/" },
-              { label: "RAGAS", url: "https://docs.ragas.io/" }
-            ]
-          },
-          {
-            id: "d7m3",
-            text: "Study Made With ML (Goku Mohandas) — free MLOps course with GitHub Actions, Docker, Ray, experiment tracking.",
-            resources: [
-              { label: "Made With ML", url: "https://madewithml.com/" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "d7-afternoon",
-        title: "Afternoon — Capstone Build",
-        badge: "afternoon",
-        icon: "🔧",
-        tasks: [
-          {
-            id: "d7a1",
-            text: "Build an SRE Incident Root-Cause Analysis Agent: connect Qdrant DB + local llama.cpp (or Vast.ai vLLM) to process K8s crash logs.",
-          },
-          {
-            id: "d7a2",
-            text: "Expose the agent via FastAPI with Prometheus metrics (/metrics endpoint).",
-          },
-          {
-            id: "d7a3",
-            text: "Solve Problem Set — Day 7: Latency Budget Decomposition (2s SLA), The 1-Minute CFO Pitch ($60k savings)."
-          },
-          {
-            id: "d7a4",
-            text: "Review SRE Incident Drills: Work through all 10 production AI debugging scenarios.",
-          }
-        ]
-      },
-      {
-        id: "d7-evening",
-        title: "Evening — Finance: Micro-SaaS Blueprint",
-        badge: "evening",
-        icon: "🌙",
-        tasks: [
-          {
-            id: "d7e1",
-            text: "Draft a 1-page business model canvas for an AI/MLOps problem from your 4 years of SRE work.",
-          },
-          {
-            id: "d7e2",
-            text: "Define: buyer persona, quantifiable ROI (e.g., reduce MTTR 30%, cut GPU waste 40%), and pricing tiers.",
-          }
-        ]
-      },
-      {
-        id: "d7-bonus",
-        title: "Bonus Deep-Dives",
-        badge: "bonus",
-        icon: "⭐",
-        isBonus: true,
-        tasks: [
-          {
-            id: "d7b1",
-            text: "K8s GPU Sharing: MIG (Multi-Instance GPU) hardware-partitioning into 7 slices, CUDA MPS for process-level sharing.",
-          },
-          {
-            id: "d7b2",
-            text: "Semantic Caching & LLM Gateways: Deploy LiteLLM as proxy in front of Vertex AI / OpenAI / vLLM with Redis caching.",
-            resources: [
-              { label: "LiteLLM", url: "https://docs.litellm.ai/" }
-            ]
-          },
-          {
-            id: "d7b3",
-            text: "Finance: Writing the 1-Page Executive ROI Memo — Situation → Complication → Resolution → Financial Impact structure.",
-          }
-        ]
-      }
-    ]
-  }
-};
-
-// ===== STORAGE (SQLite via Python server API) =====
-const DEFAULT_STATE = {
-  tasks: {},
-  journal: {},
-  timeLog: {},
-  customResources: {},
-  comments: {},
-  activeDay: 1,
-  journalDay: 1,
-  startDate: null,
-  theme: 'dark'
-};
-
-let state = { ...DEFAULT_STATE };
-
-function postEvent(event) {
-  fetch('/api/event', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(event)
-  }).catch(err => console.error('Failed to post event', err));
+// ===== DIM / FOCUS MODE =====
+let dimMode = localStorage.getItem('dim-mode') === 'true';
+function toggleDimMode() {
+  dimMode = !dimMode;
+  localStorage.setItem('dim-mode', dimMode);
+  document.documentElement.classList.toggle('dim-mode', dimMode);
+  const btn = document.getElementById('dimToggle');
+  if (btn) btn.classList.toggle('active', dimMode);
 }
+function setFocusedBlock(blockCard) {
+  if (!dimMode) return;
+  document.querySelectorAll('.block-card.focused').forEach(el => el.classList.remove('focused'));
+  if (blockCard) blockCard.classList.add('focused');
+}
+if (dimMode) document.documentElement.classList.add('dim-mode');
 
-async function loadStateFromServer() {
+// ===== STATE =====
+let state = null;
+let activeComposeTaskId = null;
+
+// ===== API =====
+async function loadState() {
   try {
     const res = await fetch('/api/state');
     if (res.ok) {
-      const data = await res.json();
-      state = { ...DEFAULT_STATE, ...data };
-      // Sync theme from DB
+      state = await res.json();
       if (state.theme) applyTheme(state.theme);
     }
   } catch (err) {
-    console.warn('Server not available, using defaults', err);
+    console.warn('Server not available', err);
+    state = { meta: { title: 'Study Tracker', subtitle: '' }, days: [], checked: {},
+      journal: {}, timeLog: {}, customResources: {}, comments: {},
+      activeDay: '', journalDay: '', startDate: null, theme: 'dark' };
   }
 }
 
-// ===== PARTICLES =====
-function createParticles() {
-  const container = document.getElementById('particles');
-  const colors = ['#F5C518', '#d4a017', '#e6b800', '#666', '#888', '#aaa'];
-  for (let i = 0; i < 30; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 4 + 1;
-    p.style.width = size + 'px';
-    p.style.height = size + 'px';
-    p.style.left = Math.random() * 100 + '%';
-    p.style.background = colors[Math.floor(Math.random() * colors.length)];
-    p.style.animationDuration = (Math.random() * 20 + 15) + 's';
-    p.style.animationDelay = (Math.random() * 20) + 's';
-    container.appendChild(p);
-  }
+function postEvent(event) {
+  return fetch('/api/event', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(event),
+  }).catch(err => console.error('Event failed', err));
 }
 
-// ===== RENDER DAY PANELS =====
-function renderPanels() {
-  const container = document.getElementById('dayPanels');
-  container.innerHTML = '';
+// ===== HELPERS =====
+function uid(prefix) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+}
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function findDay(id) { return state.days.find(d => d.id === id); }
+function findDayIndex(id) { return state.days.findIndex(d => d.id === id); }
+function getActiveDay() { return findDay(state.activeDay); }
 
-  for (let day = 1; day <= 7; day++) {
-    const data = SYLLABUS[day];
-    const panel = document.createElement('div');
-    panel.className = 'day-panel' + (day === state.activeDay ? ' active' : '');
-    panel.id = 'panel-' + day;
-
-    // Count tasks
-    let totalTasks = 0, doneTasks = 0;
-    data.blocks.forEach(block => {
-      block.tasks.forEach(task => {
-        totalTasks++;
-        if (state.tasks[task.id]) doneTasks++;
-      });
-    });
-
-    const timeLogged = state.timeLog[day] || 0;
-    const hrs = Math.floor(timeLogged / 3600);
-    const mins = Math.floor((timeLogged % 3600) / 60);
-
-    let html = `
-      <div class="day-header">
-        <h2 class="day-title">${data.title}</h2>
-        <p class="day-subtitle">${data.subtitle}</p>
-        <div class="day-meta">
-          <span class="day-time-logged">⏱ ${hrs}h ${mins}m logged</span>
-          <span class="day-progress-text">${doneTasks}/${totalTasks} tasks</span>
-        </div>
-      </div>
-    `;
-
-    data.blocks.forEach(block => {
-      let blockDone = 0;
-      block.tasks.forEach(t => { if (state.tasks[t.id]) blockDone++; });
-
-      html += `
-        <div class="block-card ${day === state.activeDay ? 'expanded' : ''}" data-block="${block.id}">
-          <div class="block-header" onclick="toggleBlock(this)">
-            <div class="block-header-left">
-              <span class="block-icon">${block.icon}</span>
-              <span class="block-title">${block.title}</span>
-              <span class="block-badge badge-${block.badge}">${block.badge === 'bonus' ? '★ BONUS' : block.badge.toUpperCase()}</span>
-            </div>
-            <div class="block-header-right">
-              <span class="block-count">${blockDone}/${block.tasks.length}</span>
-              <span class="block-chevron">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 9l6 6 6-6"/></svg>
-              </span>
-            </div>
-          </div>
-          <div class="block-content">
-            <div class="block-tasks">
-      `;
-
-      block.tasks.forEach(task => {
-        const checked = state.tasks[task.id] ? 'checked' : '';
-        const doneClass = state.tasks[task.id] ? 'done' : '';
-        const builtInRes = task.resources || [];
-        const customRes = (state.customResources && state.customResources[task.id]) || [];
-        let resourceHtml = '';
-        if (builtInRes.length || customRes.length) {
-          resourceHtml = '<div class="task-resources">';
-          builtInRes.forEach(r => {
-            resourceHtml += `<a href="${r.url}" target="_blank" rel="noopener" class="resource-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              ${r.label}
-            </a>`;
-          });
-          customRes.forEach((r, idx) => {
-            resourceHtml += `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="resource-link custom-resource" onclick="event.stopPropagation()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              ${escapeHtml(r.label)}
-              <span class="resource-remove" onclick="event.preventDefault();event.stopPropagation();removeCustomResource('${task.id}', ${idx})" title="Remove resource">×</span>
-            </a>`;
-          });
-          resourceHtml += '</div>';
-        }
-        resourceHtml += `
-          <div class="add-resource-wrapper" onclick="event.stopPropagation()">
-            <button class="add-resource-btn" onclick="showAddResourceForm('${task.id}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add Resource
-            </button>
-            <div class="add-resource-form" id="resource-form-${task.id}" style="display:none">
-              <input type="text" placeholder="Label (e.g. My Notes)" class="resource-input" id="resource-label-${task.id}" onkeydown="handleResourceKeydown(event, '${task.id}')">
-              <input type="text" placeholder="https://example.com" class="resource-input" id="resource-url-${task.id}" onkeydown="handleResourceKeydown(event, '${task.id}')">
-              <div class="resource-form-actions">
-                <button class="resource-form-btn save" onclick="addCustomResource('${task.id}')">Save</button>
-                <button class="resource-form-btn cancel" onclick="hideAddResourceForm('${task.id}')">Cancel</button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        const commentCount = (state.comments && state.comments[task.id] && state.comments[task.id].length) || 0;
-        const hasComments = commentCount > 0 ? 'has-comments' : '';
-
-        html += `
-          <label class="task-item ${doneClass}" data-task="${task.id}" id="task-${task.id}">
-            <input type="checkbox" class="task-checkbox" ${checked} onchange="toggleTask('${task.id}', this)">
-            <div class="task-info">
-              <span class="task-text">${task.text}</span>
-              ${resourceHtml}
-            </div>
-            <button class="comment-trigger ${hasComments}" data-task-id="${task.id}" onclick="event.preventDefault(); event.stopPropagation(); toggleCommentCard('${task.id}')" title="Comment">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <span class="comment-count">${commentCount || ''}</span>
-            </button>
-          </label>
-        `;
-      });
-
-      html += `
-            </div>
-          </div>
-        </div>
-      `;
-    });
-
-    panel.innerHTML = html;
-    container.appendChild(panel);
-  }
+// ===== INLINE EDITING =====
+function makeEditable(el, currentValue, onSave, opts = {}) {
+  if (el.querySelector('input, textarea')) return;
+  const isMultiline = opts.multiline || false;
+  const input = document.createElement(isMultiline ? 'textarea' : 'input');
+  input.type = 'text';
+  input.className = 'inline-edit-input' + (isMultiline ? ' multiline' : '');
+  input.value = currentValue;
+  if (opts.placeholder) input.placeholder = opts.placeholder;
+  const originalHTML = el.innerHTML;
+  el.innerHTML = '';
+  el.appendChild(input);
+  el.classList.add('editing');
+  input.focus();
+  input.select();
+  let saved = false;
+  const save = () => {
+    if (saved) return; saved = true;
+    const v = input.value.trim();
+    el.classList.remove('editing');
+    if (v && v !== currentValue) { onSave(v); }
+    else { el.innerHTML = originalHTML; }
+  };
+  const cancel = () => { saved = true; el.innerHTML = originalHTML; el.classList.remove('editing'); };
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e => {
+    e.stopPropagation();
+    if (e.key === 'Enter' && !isMultiline) { e.preventDefault(); input.blur(); }
+    if (e.key === 'Enter' && isMultiline && (e.ctrlKey || e.metaKey)) { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
 }
 
-// ===== TOGGLE BLOCK =====
-function toggleBlock(header) {
-  const card = header.closest('.block-card');
-  card.classList.toggle('expanded');
-  setTimeout(updateCommentGutter, 400);
+function editMeta(field, el) {
+  const val = (state.meta && state.meta[field]) || '';
+  makeEditable(el, val, newVal => {
+    state.meta[field] = newVal;
+    postEvent({ op: 'meta_edit', [field]: newVal });
+    if (field === 'title') document.title = newVal;
+    renderApp();
+  });
 }
 
-// ===== TOGGLE TASK =====
-function toggleTask(taskId, checkbox) {
-  state.tasks[taskId] = checkbox.checked;
-  postEvent({ op: 'task', id: taskId, v: checkbox.checked });
-  if (!state.startDate && checkbox.checked) {
-    state.startDate = new Date().toISOString();
-    postEvent({ op: 'set', k: 'startDate', v: state.startDate });
-  }
-
-  // Update label
-  const label = checkbox.closest('.task-item');
-  if (checkbox.checked) {
-    label.classList.add('done');
-  } else {
-    label.classList.remove('done');
-  }
-
-  updateStats();
-
-  // Check if day is complete
-  if (checkbox.checked) {
-    const dayNum = findDayForTask(taskId);
-    if (dayNum && isDayComplete(dayNum)) {
-      fireConfetti();
-      showToast(`🎉 Day ${dayNum} complete!`);
-    }
-  }
+function editDayField(dayId, field, el) {
+  const day = findDay(dayId);
+  if (!day) return;
+  makeEditable(el, day[field] || '', newVal => {
+    day[field] = newVal;
+    postEvent({ op: 'day_edit', id: dayId, [field]: newVal });
+    if (field === 'label' || field === 'title') renderDayNav();
+    renderActivePanel();
+    renderJournal();
+  });
 }
 
-function findDayForTask(taskId) {
-  for (let day = 1; day <= 7; day++) {
-    for (const block of SYLLABUS[day].blocks) {
-      for (const task of block.tasks) {
-        if (task.id === taskId) return day;
+function editBlockTitle(blockId, el) {
+  for (const day of state.days) {
+    for (const block of day.blocks) {
+      if (block.id === blockId) {
+        makeEditable(el, block.title, newVal => {
+          block.title = newVal;
+          postEvent({ op: 'block_edit', id: blockId, title: newVal });
+          renderActivePanel();
+        });
+        return;
       }
     }
   }
-  return null;
 }
 
-function isDayComplete(day) {
-  const data = SYLLABUS[day];
-  for (const block of data.blocks) {
-    if (block.isBonus) continue; // Don't require bonus tasks
-    for (const task of block.tasks) {
-      if (!state.tasks[task.id]) return false;
+function editTaskInline(taskId, el) {
+  for (const day of state.days) {
+    for (const block of day.blocks) {
+      for (const task of block.tasks) {
+        if (task.id === taskId) {
+          makeEditable(el, task.text, newVal => {
+            task.text = newVal;
+            postEvent({ op: 'task_edit', id: taskId, text: newVal });
+            renderActivePanel();
+          }, { multiline: true });
+          return;
+        }
+      }
     }
   }
-  return true;
+}
+
+// ===== RENDER: APP SHELL =====
+function renderApp() {
+  const app = document.getElementById('app');
+  const meta = state.meta || {};
+  app.innerHTML = `
+    <header class="header">
+      <div class="header-content">
+        <div class="header-left">
+          <div class="logo">
+            <div class="logo-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <div><h1 class="editable" onclick="editMeta('title', this)" title="Click to edit title">${escapeHtml(meta.title || 'Study Tracker')}</h1>
+            <p class="subtitle editable" onclick="editMeta('subtitle', this)" title="Click to edit subtitle">${escapeHtml(meta.subtitle || 'Click to set subtitle')}</p></div>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="header-stat"><span class="stat-label">Overall</span><span class="stat-value" id="overallPercent">0%</span></div>
+          <div class="header-stat"><span class="stat-label">Streak</span><span class="stat-value" id="streakCount">0 🔥</span></div>
+          <div class="header-stat"><span class="stat-label">Hours</span><span class="stat-value" id="totalHours">0h</span></div>
+          <button class="btn-theme" id="dimToggle" title="Zen mode" ${dimMode ? 'class="btn-theme active"' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 22c-4-4-8-7.5-8-12a8 8 0 0 1 16 0c0 4.5-4 8-8 12z"/><path d="M12 10v6"/><path d="M9 13l3-3 3 3"/></svg>
+          </button>
+          <button class="btn-theme" id="themeToggle" title="Toggle theme">
+            <svg class="theme-icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="theme-icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+          <button class="btn-data" id="dataToggle" title="Export / Import">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="btn-reset" id="resetBtn" title="Reset all progress">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="overall-progress"><div class="overall-progress-bar" id="overallBar" style="width:0%"></div></div>
+    </header>
+
+    <div class="data-panel" id="dataPanel" style="display:none">
+      <div class="data-panel-content">
+        <div class="data-section">
+          <h3 class="data-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+            Export
+          </h3>
+          <div class="data-buttons">
+            <button class="data-btn" onclick="exportState()" title="Full state with progress, journal, comments">
+              <span class="data-btn-icon">📦</span>
+              <span class="data-btn-text">State<small>.json</small></span>
+            </button>
+            <button class="data-btn" onclick="exportSyllabus()" title="Structure only (days, blocks, tasks) — no progress">
+              <span class="data-btn-icon">📄</span>
+              <span class="data-btn-text">Syllabus<small>.toml</small></span>
+            </button>
+            <button class="data-btn" onclick="exportEvents()" title="Raw event log">
+              <span class="data-btn-icon">📋</span>
+              <span class="data-btn-text">Events<small>.ndjson</small></span>
+            </button>
+          </div>
+        </div>
+        <div class="data-divider"></div>
+        <div class="data-section">
+          <h3 class="data-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="17 11 12 6 7 11"/><line x1="12" y1="6" x2="12" y2="18"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+            Import
+          </h3>
+          <div class="data-buttons">
+            <button class="data-btn import-btn" onclick="importStateFile()" title="Restore full state from a previously exported JSON">
+              <span class="data-btn-icon">📦</span>
+              <span class="data-btn-text">Load State<small>.json</small></span>
+            </button>
+            <button class="data-btn import-btn" onclick="importSyllabusFile()" title="Load a new syllabus — resets progress">
+              <span class="data-btn-icon">📄</span>
+              <span class="data-btn-text">Load Syllabus<small>.toml</small></span>
+            </button>
+          </div>
+          <p class="data-hint">⚠️ Import replaces current data. Export first to back up.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="stat-card-icon tasks-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="stat-card-info"><span class="stat-card-value" id="completedTasks">0 / 0</span><span class="stat-card-label">Tasks Completed</span></div></div>
+      <div class="stat-card"><div class="stat-card-icon time-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="stat-card-info"><span class="stat-card-value" id="todayHours">0h 0m</span><span class="stat-card-label">Total Study Time</span></div></div>
+      <div class="stat-card"><div class="stat-card-icon bonus-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-card-info"><span class="stat-card-value" id="bonusDone">0 / 0</span><span class="stat-card-label">Bonus Tasks Done</span></div></div>
+      <div class="stat-card"><div class="stat-card-icon days-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="stat-card-info"><span class="stat-card-value" id="daysComplete">0 / 0</span><span class="stat-card-label">Days Completed</span></div></div>
+    </div>
+
+    <div class="timer-bar">
+      <div class="timer-display"><div class="timer-icon" id="timerPulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><span class="timer-time" id="timerDisplay">00:00:00</span><span class="timer-label">Session Timer</span></div>
+      <div class="timer-day-select"><label for="timerDay">Logging to:</label><select id="timerDay"></select></div>
+      <div class="timer-controls">
+        <button class="timer-btn start" id="timerStart"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start</button>
+        <button class="timer-btn pause" id="timerPause" disabled><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause</button>
+        <button class="timer-btn stop" id="timerStop" disabled><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="1"/></svg> Save & Stop</button>
+      </div>
+    </div>
+
+    <nav class="day-nav" id="dayNav"></nav>
+    <div id="addDayFormArea"></div>
+    <main class="day-panels" id="dayPanels"></main>
+    <section class="journal-section" id="journalSection"></section>
+    <footer class="footer"><p>${escapeHtml(meta.title || 'Study Tracker')} · Data saved locally · <span class="editable footer-edit" onclick="editMeta('title', this.closest('.footer').querySelector('p'))" title="Click to edit">✏️</span></p></footer>
+  `;
+
+  // Bind static events
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+  document.getElementById('dimToggle').addEventListener('click', toggleDimMode);
+  const dimBtn = document.getElementById('dimToggle');
+  if (dimMode) dimBtn.classList.add('active');
+  document.getElementById('resetBtn').addEventListener('click', resetAll);
+  document.getElementById('dataToggle').addEventListener('click', toggleDataPanel);
+  document.getElementById('timerStart').addEventListener('click', startTimer);
+  document.getElementById('timerPause').addEventListener('click', pauseTimer);
+  document.getElementById('timerStop').addEventListener('click', stopTimer);
+
+  renderDayNav();
+  renderTimerDaySelect();
+  renderActivePanel();
+  renderJournal();
+  updateStats();
+}
+
+// ===== RENDER: DAY NAVIGATION =====
+function renderDayNav() {
+  const nav = document.getElementById('dayNav');
+  let html = '';
+  state.days.forEach((day, i) => {
+    const isActive = day.id === state.activeDay;
+    const isComplete = isDayComplete(day.id);
+    const cls = ['day-pill'];
+    if (isActive) cls.push('active');
+    if (isComplete) cls.push('completed');
+    html += `<button class="${cls.join(' ')}" data-day="${day.id}" onclick="switchDay('${day.id}')">
+      <span class="day-pill-number">${i + 1}</span>
+      <span class="day-pill-label">${escapeHtml(day.label || day.title)}</span>
+      <div class="day-pill-progress"><div class="day-pill-bar" id="dayBar-${day.id}"></div></div>
+    </button>`;
+  });
+  // Add day button
+  html += `<button class="day-pill add-day-pill" onclick="showAddDayForm()" title="Add a new day">
+    <span class="day-pill-number">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </span>
+    <span class="day-pill-label">ADD DAY</span>
+  </button>`;
+  nav.innerHTML = html;
+}
+
+// ===== RENDER: TIMER DAY SELECT =====
+function renderTimerDaySelect() {
+  const sel = document.getElementById('timerDay');
+  sel.innerHTML = state.days.map((d, i) =>
+    `<option value="${d.id}"${d.id === state.activeDay ? ' selected' : ''}>Day ${i + 1}</option>`
+  ).join('');
+}
+
+// ===== RENDER: ACTIVE DAY PANEL =====
+function renderActivePanel() {
+  const container = document.getElementById('dayPanels');
+  const day = getActiveDay();
+  if (!day) { container.innerHTML = '<p class="empty-state">No days yet. Click <strong>+ ADD DAY</strong> to get started.</p>'; return; }
+
+  let totalTasks = 0, doneTasks = 0;
+  day.blocks.forEach(b => b.tasks.forEach(t => { totalTasks++; if (state.checked[t.id]) doneTasks++; }));
+  const timeLogged = state.timeLog[day.id] || 0;
+  const hrs = Math.floor(timeLogged / 3600), mins = Math.floor((timeLogged % 3600) / 60);
+
+  let html = `<div class="day-panel active">
+    <div class="day-header">
+      <h2 class="day-title editable" onclick="editDayField('${day.id}', 'title', this)" title="Click to edit title">${escapeHtml(day.title)}</h2>
+      <p class="day-subtitle editable" onclick="editDayField('${day.id}', 'subtitle', this)" title="Click to edit subtitle">${escapeHtml(day.subtitle || 'Click to add subtitle…')}</p>
+      <div class="day-meta">
+        <span class="day-time-logged">⏱ ${hrs}h ${mins}m logged</span>
+        <span class="day-progress-text">${doneTasks}/${totalTasks} tasks</span>
+        <span class="day-label-tag editable" onclick="editDayField('${day.id}', 'label', this)" title="Click to edit pill label">🏷️ ${escapeHtml(day.label)}</span>
+        ${state.days.length > 1 ? `<button class="meta-action-btn danger" onclick="removeDay('${day.id}')" title="Delete day">🗑️</button>` : ''}
+      </div>
+    </div>`;
+
+  day.blocks.forEach(block => {
+    let blockDone = 0;
+    block.tasks.forEach(t => { if (state.checked[t.id]) blockDone++; });
+    html += `<div class="block-card expanded" data-block="${block.id}">
+      <div class="block-header" onclick="toggleBlock(this)">
+        <div class="block-header-left">
+          <span class="block-icon">${block.icon || '📌'}</span>
+          <span class="block-title editable" onclick="event.stopPropagation(); editBlockTitle('${block.id}', this)" title="Click to edit">${escapeHtml(block.title)}</span>
+          <span class="block-badge badge-${block.badge || 'morning'}">${block.badge === 'bonus' ? '★ BONUS' : (block.badge || 'morning').toUpperCase()}</span>
+        </div>
+        <div class="block-header-right">
+          <span class="block-count">${blockDone}/${block.tasks.length}</span>
+          <button class="block-action-btn danger" onclick="event.stopPropagation(); removeBlock('${block.id}')" title="Remove block">×</button>
+          <span class="block-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+      </div>
+      <div class="block-content"><div class="block-tasks">`;
+
+    block.tasks.forEach(task => {
+      html += renderTask(task, day.id);
+    });
+
+    // Add task button
+    html += `<div class="add-task-row">
+        <button class="add-item-btn" onclick="showAddTaskForm('${block.id}')" id="add-task-trigger-${block.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add task
+        </button>
+        <div class="add-task-form" id="add-task-form-${block.id}" style="display:none">
+          <textarea placeholder="Task description..." class="add-item-input" id="add-task-input-${block.id}" rows="2" onkeydown="handleAddTaskKey(event, '${block.id}')"></textarea>
+          <div class="add-item-actions">
+            <button class="resource-form-btn save" onclick="submitAddTask('${block.id}')">Add</button>
+            <button class="resource-form-btn cancel" onclick="cancelAddTask('${block.id}')">Cancel</button>
+          </div>
+        </div>
+      </div>`;
+
+    html += '</div></div></div>';
+  });
+
+  // Add block button
+  html += `<div class="add-block-area">
+    <button class="add-item-btn add-block-btn" onclick="showAddBlockForm('${day.id}')" id="add-block-trigger-${day.id}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add block
+    </button>
+    <div class="add-block-form" id="add-block-form-${day.id}" style="display:none">
+      <input type="text" placeholder="Block title (e.g. Morning — Theory)" class="add-item-input" id="add-block-title-${day.id}" onkeydown="handleAddBlockKey(event, '${day.id}')">
+      <div class="add-block-options">
+        <select class="add-block-select" id="add-block-badge-${day.id}">
+          <option value="morning">☀️ Morning</option><option value="afternoon">🔧 Afternoon</option>
+          <option value="evening">🌙 Evening</option><option value="bonus">⭐ Bonus</option>
+        </select>
+      </div>
+      <div class="add-item-actions">
+        <button class="resource-form-btn save" onclick="submitAddBlock('${day.id}')">Add</button>
+        <button class="resource-form-btn cancel" onclick="cancelAddBlock('${day.id}')">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ===== RENDER: SINGLE TASK =====
+function renderTask(task, dayId) {
+  const checked = state.checked[task.id] ? 'checked' : '';
+  const doneClass = state.checked[task.id] ? 'done' : '';
+  const builtInRes = task.resources || [];
+  const customRes = (state.customResources && state.customResources[task.id]) || [];
+  const comments = (state.comments && state.comments[task.id]) || [];
+  const commentCount = comments.length;
+  const hasComments = commentCount > 0 ? 'has-comments' : '';
+  const isComposing = activeComposeTaskId === task.id;
+
+  let resourceHtml = '';
+  if (builtInRes.length || customRes.length) {
+    resourceHtml = '<div class="task-resources">';
+    builtInRes.forEach(r => {
+      resourceHtml += `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="resource-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ${escapeHtml(r.label)}</a>`;
+    });
+    customRes.forEach((r, idx) => {
+      resourceHtml += `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="resource-link custom-resource" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ${escapeHtml(r.label)}
+        <span class="resource-remove" onclick="event.preventDefault();event.stopPropagation();removeCustomResource('${task.id}', ${idx})" title="Remove">×</span></a>`;
+    });
+    resourceHtml += '</div>';
+  }
+
+  // Resource add button
+  resourceHtml += `<div class="add-resource-wrapper" onclick="event.stopPropagation()">
+    <button class="add-resource-btn" onclick="showAddResourceForm('${task.id}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Resource
+    </button>
+    <div class="add-resource-form" id="resource-form-${task.id}" style="display:none">
+      <input type="text" placeholder="Label (e.g. My Notes)" class="resource-input" id="resource-label-${task.id}" onkeydown="handleResourceKeydown(event, '${task.id}')">
+      <input type="text" placeholder="https://example.com" class="resource-input" id="resource-url-${task.id}" onkeydown="handleResourceKeydown(event, '${task.id}')">
+      <div class="resource-form-actions">
+        <button class="resource-form-btn save" onclick="addCustomResource('${task.id}')">Save</button>
+        <button class="resource-form-btn cancel" onclick="hideAddResourceForm('${task.id}')">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+
+  // Inline comments
+  let commentHtml = '';
+  if (isComposing || commentCount > 0) {
+    commentHtml = `<div class="inline-comments" id="comments-${task.id}" onclick="event.stopPropagation()">`;
+    comments.forEach((c, i) => {
+      commentHtml += `<div class="comment-item">
+        <p class="comment-text">${escapeHtml(c.text)}</p>
+        <div class="comment-meta">
+          <span class="comment-time">${formatCommentTime(c.t)}</span>
+          <button class="comment-delete" onclick="removeComment('${task.id}', ${i})">Delete</button>
+        </div>
+      </div>`;
+    });
+    if (isComposing) {
+      commentHtml += `<div class="comment-compose">
+        <textarea class="comment-input" id="commentInput" placeholder="Add a comment…" rows="2"
+          onclick="event.stopPropagation()" onkeydown="handleCommentKeydown(event, '${task.id}')"></textarea>
+        <div class="comment-compose-actions">
+          <button class="comment-submit" onclick="event.stopPropagation(); submitComment('${task.id}')">Comment</button>
+          ${commentCount > 0 ? `<button class="comment-resolve" onclick="event.stopPropagation(); resolveComments('${task.id}')">Resolve</button>` : ''}
+          <button class="resource-form-btn cancel" onclick="event.stopPropagation(); closeCompose()">Cancel</button>
+        </div>
+      </div>`;
+    }
+    commentHtml += '</div>';
+  }
+
+  return `<div class="task-item ${doneClass} ${isComposing ? 'commenting' : ''}" data-task="${task.id}" id="task-${task.id}">
+    <input type="checkbox" class="task-checkbox" ${checked} onchange="toggleTask('${task.id}', this)" onclick="event.stopPropagation()">
+    <div class="task-info">
+      <span class="task-text editable" onclick="event.stopPropagation(); editTaskInline('${task.id}', this)" title="Click to edit">${escapeHtml(task.text)}</span>
+      ${resourceHtml}
+    </div>
+    <div class="task-actions">
+      <button class="comment-trigger ${hasComments}" onclick="event.preventDefault(); event.stopPropagation(); toggleCommentCard('${task.id}')" title="Comment">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="comment-count">${commentCount || ''}</span>
+      </button>
+      <button class="task-action-btn copy-btn" onclick="event.stopPropagation(); copyTaskText('${task.id}', this)" title="Copy text">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+      <button class="task-action-btn danger" onclick="event.stopPropagation(); removeTask('${task.id}')" title="Delete task">🗑️</button>
+    </div>
+    ${commentHtml}
+  </div>`;
+}
+
+// ===== RENDER: JOURNAL =====
+function renderJournal() {
+  const section = document.getElementById('journalSection');
+  if (!state.days.length) { section.innerHTML = ''; return; }
+
+  let tabsHtml = state.days.map((d, i) => {
+    const isActive = d.id === state.journalDay;
+    const hasContent = state.journal[d.id] && state.journal[d.id].trim();
+    return `<button class="journal-tab ${isActive ? 'active' : ''} ${hasContent ? 'has-content' : ''}"
+      data-jday="${d.id}" onclick="switchJournalDay('${d.id}')">Day ${i + 1}</button>`;
+  }).join('');
+
+  const currentText = state.journal[state.journalDay] || '';
+
+  section.innerHTML = `
+    <h2 class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Daily Journal</h2>
+    <div class="journal-tabs">${tabsHtml}</div>
+    <div class="journal-area">
+      <textarea id="journalText" placeholder="What did you learn today? Key takeaways, aha moments...">${escapeHtml(currentText)}</textarea>
+      <button class="journal-save" id="journalSave">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Note
+      </button>
+    </div>`;
+
+  document.getElementById('journalSave').addEventListener('click', function () {
+    saveJournalEntry();
+    this.classList.add('saved'); this.textContent = '✓ Saved';
+    setTimeout(() => {
+      this.classList.remove('saved');
+      this.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Note`;
+    }, 1500);
+  });
 }
 
 // ===== UPDATE STATS =====
 function updateStats() {
-  let totalTasks = 0, completedTasks = 0;
-  let totalBonus = 0, completedBonus = 0;
-  let daysComplete = 0;
+  let totalTasks = 0, completedTasks = 0, totalBonus = 0, completedBonus = 0, daysComplete = 0;
 
-  for (let day = 1; day <= 7; day++) {
-    const data = SYLLABUS[day];
-    let dayDone = 0, dayTotal = 0;
-    let dayTotalAll = 0, dayDoneAll = 0;
-
-    data.blocks.forEach(block => {
+  state.days.forEach(day => {
+    let dayDone = 0, dayTotal = 0, dayAllDone = 0, dayAllTotal = 0;
+    day.blocks.forEach(block => {
       block.tasks.forEach(task => {
-        dayTotalAll++;
-        if (state.tasks[task.id]) dayDoneAll++;
-
+        dayAllTotal++;
+        if (state.checked[task.id]) dayAllDone++;
         if (block.isBonus) {
           totalBonus++;
-          if (state.tasks[task.id]) completedBonus++;
+          if (state.checked[task.id]) completedBonus++;
         } else {
-          totalTasks++;
-          dayTotal++;
-          if (state.tasks[task.id]) {
-            completedTasks++;
-            dayDone++;
-          }
+          totalTasks++; dayTotal++;
+          if (state.checked[task.id]) { completedTasks++; dayDone++; }
         }
       });
     });
-
     // Update day pill bar
-    const bar = document.getElementById('dayBar' + day);
-    if (bar) {
-      const pct = dayTotalAll > 0 ? (dayDoneAll / dayTotalAll) * 100 : 0;
-      bar.style.width = pct + '%';
-    }
-
-    // Check day complete (non-bonus)
-    const pill = document.querySelector(`.day-pill[data-day="${day}"]`);
+    const bar = document.getElementById('dayBar-' + day.id);
+    if (bar) bar.style.width = (dayAllTotal > 0 ? (dayAllDone / dayAllTotal) * 100 : 0) + '%';
+    // Day complete check
+    const pill = document.querySelector(`.day-pill[data-day="${day.id}"]`);
     if (pill) {
-      if (dayTotal > 0 && dayDone === dayTotal) {
-        pill.classList.add('completed');
-        daysComplete++;
-      } else {
-        pill.classList.remove('completed');
-      }
+      if (dayTotal > 0 && dayDone === dayTotal) { pill.classList.add('completed'); daysComplete++; }
+      else pill.classList.remove('completed');
     }
+  });
+
+  const pct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const el = id => document.getElementById(id);
+  el('overallPercent').textContent = pct + '%';
+  el('overallBar').style.width = pct + '%';
+  el('completedTasks').textContent = `${completedTasks} / ${totalTasks}`;
+  el('bonusDone').textContent = `${completedBonus} / ${totalBonus}`;
+  el('daysComplete').textContent = `${daysComplete} / ${state.days.length}`;
+
+  let totalSec = 0;
+  for (const d in state.timeLog) totalSec += state.timeLog[d];
+  el('totalHours').textContent = Math.floor(totalSec / 3600) + 'h';
+  el('todayHours').textContent = `${Math.floor(totalSec / 3600)}h ${Math.floor((totalSec % 3600) / 60)}m`;
+  el('streakCount').textContent = calculateStreak() + ' 🔥';
+}
+
+function isDayComplete(dayId) {
+  const day = findDay(dayId);
+  if (!day) return false;
+  for (const block of day.blocks) {
+    if (block.isBonus) continue;
+    for (const task of block.tasks) { if (!state.checked[task.id]) return false; }
   }
-
-  // Overall
-  const overallPct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-  document.getElementById('overallPercent').textContent = overallPct + '%';
-  document.getElementById('overallBar').style.width = overallPct + '%';
-  document.getElementById('completedTasks').textContent = `${completedTasks} / ${totalTasks}`;
-  document.getElementById('bonusDone').textContent = `${completedBonus} / ${totalBonus}`;
-  document.getElementById('daysComplete').textContent = `${daysComplete} / 7`;
-
-  // Total hours
-  let totalSeconds = 0;
-  for (const d in state.timeLog) totalSeconds += state.timeLog[d];
-  const totalH = Math.floor(totalSeconds / 3600);
-  const totalM = Math.floor((totalSeconds % 3600) / 60);
-  document.getElementById('totalHours').textContent = totalH + 'h';
-  document.getElementById('todayHours').textContent = `${totalH}h ${totalM}m`;
-
-  // Streak
-  const streak = calculateStreak();
-  document.getElementById('streakCount').textContent = streak + ' 🔥';
+  return day.blocks.some(b => !b.isBonus && b.tasks.length > 0);
 }
 
 function calculateStreak() {
-  // Simple streak: count consecutive days completed
   let streak = 0;
-  for (let day = 1; day <= 7; day++) {
-    if (isDayComplete(day)) streak++;
+  for (const day of state.days) {
+    if (isDayComplete(day.id)) streak++;
     else break;
   }
   return streak;
 }
 
-// ===== CUSTOM RESOURCES =====
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+// ===== DAY MANAGEMENT =====
+function switchDay(dayId) {
+  state.activeDay = dayId;
+  postEvent({ op: 'set', k: 'activeDay', v: dayId });
+  document.querySelectorAll('.day-pill').forEach(p => p.classList.toggle('active', p.dataset.day === dayId));
+  renderActivePanel();
+  renderTimerDaySelect();
+  const timerSel = document.getElementById('timerDay');
+  if (timerSel) timerSel.value = dayId;
 }
 
+function showAddDayForm() {
+  const area = document.getElementById('addDayFormArea');
+  area.innerHTML = `<div class="add-day-form-panel">
+    <h3>Add New Day</h3>
+    <input type="text" placeholder="Title (e.g. Day 3: Advanced Topics)" class="add-item-input" id="addDayTitle" autofocus>
+    <input type="text" placeholder="Subtitle (e.g. Deep dive into advanced material)" class="add-item-input" id="addDaySubtitle">
+    <input type="text" placeholder="Short label (e.g. Advanced)" class="add-item-input" id="addDayLabel">
+    <div class="add-item-actions">
+      <button class="resource-form-btn save" onclick="submitAddDay()">Add Day</button>
+      <button class="resource-form-btn cancel" onclick="cancelAddDay()">Cancel</button>
+    </div>
+  </div>`;
+  document.getElementById('addDayTitle').focus();
+  document.getElementById('addDayTitle').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitAddDay();
+    if (e.key === 'Escape') cancelAddDay();
+  });
+}
+
+function cancelAddDay() { document.getElementById('addDayFormArea').innerHTML = ''; }
+
+function submitAddDay() {
+  const title = document.getElementById('addDayTitle').value.trim();
+  if (!title) { showToast('⚠️ Title is required'); return; }
+  const subtitle = document.getElementById('addDaySubtitle').value.trim();
+  const label = document.getElementById('addDayLabel').value.trim() || title.split(':').pop().trim();
+  const dayId = uid('day');
+  const day = { id: dayId, title, subtitle, label, blocks: [] };
+  state.days.push(day);
+  postEvent({ op: 'day_add', day });
+  cancelAddDay();
+  renderDayNav();
+  renderTimerDaySelect();
+  renderJournal();
+  switchDay(dayId);
+  updateStats();
+  showToast('📅 Day added');
+}
+
+// editDayField, editBlockTitle, editTaskInline — defined in INLINE EDITING section above
+
+function removeDay(dayId) {
+  if (!confirm('Delete this day and all its tasks? This cannot be undone.')) return;
+  state.days = state.days.filter(d => d.id !== dayId);
+  postEvent({ op: 'day_rm', id: dayId });
+  if (state.activeDay === dayId) state.activeDay = state.days.length ? state.days[0].id : '';
+  if (state.journalDay === dayId) state.journalDay = state.days.length ? state.days[0].id : '';
+  renderDayNav();
+  renderTimerDaySelect();
+  renderActivePanel();
+  renderJournal();
+  updateStats();
+  showToast('🗑️ Day removed');
+}
+
+// ===== BLOCK MANAGEMENT =====
+function showAddBlockForm(dayId) {
+  document.getElementById('add-block-trigger-' + dayId).style.display = 'none';
+  document.getElementById('add-block-form-' + dayId).style.display = 'flex';
+  document.getElementById('add-block-title-' + dayId).focus();
+}
+function cancelAddBlock(dayId) {
+  document.getElementById('add-block-trigger-' + dayId).style.display = '';
+  document.getElementById('add-block-form-' + dayId).style.display = 'none';
+}
+function handleAddBlockKey(e, dayId) {
+  if (e.key === 'Enter') { e.preventDefault(); submitAddBlock(dayId); }
+  if (e.key === 'Escape') cancelAddBlock(dayId);
+}
+function submitAddBlock(dayId) {
+  const title = document.getElementById('add-block-title-' + dayId).value.trim();
+  if (!title) { showToast('⚠️ Block title required'); return; }
+  const badge = document.getElementById('add-block-badge-' + dayId).value;
+  const icons = { morning: '☀️', afternoon: '🔧', evening: '🌙', bonus: '⭐' };
+  const blockId = uid('blk');
+  const block = { id: blockId, title, badge, icon: icons[badge] || '📌', isBonus: badge === 'bonus', tasks: [] };
+  const day = findDay(dayId);
+  if (day) { day.blocks.push(block); postEvent({ op: 'block_add', dayId, block }); }
+  renderActivePanel();
+  updateStats();
+  showToast('📦 Block added');
+}
+function removeBlock(blockId) {
+  if (!confirm('Remove this block and all its tasks?')) return;
+  state.days.forEach(day => { day.blocks = day.blocks.filter(b => b.id !== blockId); });
+  postEvent({ op: 'block_rm', id: blockId });
+  renderActivePanel();
+  updateStats();
+  showToast('🗑️ Block removed');
+}
+
+// ===== TASK MANAGEMENT =====
+function toggleBlock(header) {
+  const card = header.closest('.block-card');
+  card.classList.toggle('expanded');
+  if (card.classList.contains('expanded')) setFocusedBlock(card);
+}
+
+function toggleTask(taskId, checkbox) {
+  state.checked[taskId] = checkbox.checked;
+  postEvent({ op: 'task', id: taskId, v: checkbox.checked });
+  if (!state.startDate && checkbox.checked) {
+    state.startDate = new Date().toISOString();
+    postEvent({ op: 'set', k: 'startDate', v: state.startDate });
+  }
+  const item = checkbox.closest('.task-item');
+  setFocusedBlock(item.closest('.block-card'));
+  item.classList.toggle('done', checkbox.checked);
+  updateStats();
+  if (checkbox.checked) {
+    fireBurst(checkbox);
+    // Drop task text into trophy pile
+    const taskText = item.querySelector('.task-text');
+    if (taskText) dropTrophy(taskText.textContent.trim());
+    const dayId = findDayForTask(taskId);
+    if (dayId && isDayComplete(dayId)) { fireDayComplete(); showToast('🎉 Day complete!'); }
+  } else {
+    // Remove from trophy pile when unchecked
+    const taskText = item.querySelector('.task-text');
+    if (taskText) removeTrophy(taskText.textContent.trim());
+  }
+}
+
+function findDayForTask(taskId) {
+  for (const day of state.days)
+    for (const block of day.blocks)
+      for (const task of block.tasks)
+        if (task.id === taskId) return day.id;
+  return null;
+}
+
+function showAddTaskForm(blockId) {
+  document.getElementById('add-task-trigger-' + blockId).style.display = 'none';
+  document.getElementById('add-task-form-' + blockId).style.display = 'flex';
+  document.getElementById('add-task-input-' + blockId).focus();
+}
+function cancelAddTask(blockId) {
+  document.getElementById('add-task-trigger-' + blockId).style.display = '';
+  document.getElementById('add-task-form-' + blockId).style.display = 'none';
+  document.getElementById('add-task-input-' + blockId).value = '';
+}
+function handleAddTaskKey(e, blockId) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submitAddTask(blockId); }
+  if (e.key === 'Escape') cancelAddTask(blockId);
+}
+function submitAddTask(blockId) {
+  const input = document.getElementById('add-task-input-' + blockId);
+  const text = input.value.trim();
+  if (!text) { showToast('⚠️ Task description required'); return; }
+  const taskId = uid('task');
+  const task = { id: taskId, text, resources: [] };
+  // Find block and add task
+  for (const day of state.days) {
+    for (const block of day.blocks) {
+      if (block.id === blockId) { block.tasks.push(task); break; }
+    }
+  }
+  postEvent({ op: 'task_add', blockId, task });
+  input.value = '';
+  renderActivePanel();
+  updateStats();
+  showToast('✅ Task added');
+}
+
+// editTaskInline — defined in INLINE EDITING section above
+
+function removeTask(taskId) {
+  if (!confirm('Remove this task?')) return;
+  state.days.forEach(day => {
+    day.blocks.forEach(block => { block.tasks = block.tasks.filter(t => t.id !== taskId); });
+  });
+  delete state.checked[taskId];
+  if (state.customResources) delete state.customResources[taskId];
+  if (state.comments) delete state.comments[taskId];
+  postEvent({ op: 'task_rm', id: taskId });
+  renderActivePanel();
+  updateStats();
+  showToast('🗑️ Task removed');
+}
+
+function copyTaskText(taskId, btn) {
+  let text = '';
+  state.days.forEach(day => {
+    day.blocks.forEach(block => {
+      block.tasks.forEach(t => { if (t.id === taskId) text = t.text; });
+    });
+  });
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.title = 'Copied!';
+    showToast('📋 Copied to clipboard');
+    setTimeout(() => { btn.classList.remove('copied'); btn.title = 'Copy text'; }, 1500);
+  }).catch(() => {
+    // Fallback for non-HTTPS
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    showToast('📋 Copied to clipboard');
+    setTimeout(() => btn.classList.remove('copied'), 1500);
+  });
+}
+
+// ===== CUSTOM RESOURCES =====
 function showAddResourceForm(taskId) {
-  // Hide any other open forms first
   document.querySelectorAll('.add-resource-form').forEach(f => f.style.display = 'none');
   const form = document.getElementById('resource-form-' + taskId);
-  if (form) {
-    form.style.display = 'flex';
-    const labelInput = document.getElementById('resource-label-' + taskId);
-    if (labelInput) setTimeout(() => labelInput.focus(), 50);
-  }
+  if (form) { form.style.display = 'flex'; setTimeout(() => document.getElementById('resource-label-' + taskId).focus(), 50); }
 }
-
 function hideAddResourceForm(taskId) {
   const form = document.getElementById('resource-form-' + taskId);
-  if (form) {
-    form.style.display = 'none';
-    document.getElementById('resource-label-' + taskId).value = '';
-    document.getElementById('resource-url-' + taskId).value = '';
-  }
+  if (form) { form.style.display = 'none'; }
 }
-
 function addCustomResource(taskId) {
   const label = document.getElementById('resource-label-' + taskId).value.trim();
   const url = document.getElementById('resource-url-' + taskId).value.trim();
-
-  if (!label || !url) {
-    showToast('⚠️ Please enter both a label and URL');
-    return;
-  }
-
+  if (!label || !url) { showToast('⚠️ Both label and URL required'); return; }
   if (!state.customResources) state.customResources = {};
   if (!state.customResources[taskId]) state.customResources[taskId] = [];
-
   state.customResources[taskId].push({ label, url });
-  postEvent({ op: 'res_add', id: taskId, label: label, url: url });
-
-  renderPanels();
-  switchDay(state.activeDay);
-  showToast('🔗 Resource added');
+  postEvent({ op: 'res_add', id: taskId, label, url });
+  renderActivePanel(); showToast('🔗 Resource added');
 }
-
-function removeCustomResource(taskId, index) {
+function removeCustomResource(taskId, idx) {
   if (!state.customResources || !state.customResources[taskId]) return;
-
-  postEvent({ op: 'res_rm', id: taskId, idx: index });
-  state.customResources[taskId].splice(index, 1);
-  if (state.customResources[taskId].length === 0) {
-    delete state.customResources[taskId];
-  }
-
-  renderPanels();
-  switchDay(state.activeDay);
-  showToast('🗑️ Resource removed');
+  postEvent({ op: 'res_rm', id: taskId, idx });
+  state.customResources[taskId].splice(idx, 1);
+  if (!state.customResources[taskId].length) delete state.customResources[taskId];
+  renderActivePanel(); showToast('🗑️ Resource removed');
 }
-
 function handleResourceKeydown(e, taskId) {
   e.stopPropagation();
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    addCustomResource(taskId);
-  } else if (e.key === 'Escape') {
-    e.preventDefault();
-    hideAddResourceForm(taskId);
-  }
+  if (e.key === 'Enter') { e.preventDefault(); addCustomResource(taskId); }
+  if (e.key === 'Escape') hideAddResourceForm(taskId);
 }
 
-// ===== DAY NAVIGATION =====
-function switchDay(day) {
-  state.activeDay = day;
-  postEvent({ op: 'set', k: 'activeDay', v: day });
-
-  // Update pills
-  document.querySelectorAll('.day-pill').forEach(pill => {
-    pill.classList.toggle('active', parseInt(pill.dataset.day) === day);
-  });
-
-  // Update panels
-  document.querySelectorAll('.day-panel').forEach(panel => {
-    panel.classList.remove('active');
-  });
-  const target = document.getElementById('panel-' + day);
-  if (target) {
-    target.classList.add('active');
-    // Expand all blocks in active panel
-    target.querySelectorAll('.block-card').forEach(card => card.classList.add('expanded'));
-  }
-  setTimeout(updateCommentGutter, 50);
+// ===== COMMENTS (inline) =====
+function toggleCommentCard(taskId) {
+  if (activeComposeTaskId === taskId) closeCompose();
+  else openCompose(taskId);
+}
+function openCompose(taskId) {
+  activeComposeTaskId = taskId;
+  renderActivePanel();
+  setTimeout(() => { const inp = document.getElementById('commentInput'); if (inp) inp.focus(); }, 50);
+}
+function closeCompose() {
+  activeComposeTaskId = null;
+  renderActivePanel();
+}
+function formatCommentTime(isoStr) {
+  if (!isoStr) return '';
+  try {
+    const d = new Date(isoStr), diff = Date.now() - d;
+    if (diff < 60000) return 'just now';
+    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  } catch { return ''; }
+}
+function handleCommentKeydown(e, taskId) {
+  e.stopPropagation();
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submitComment(taskId); }
+  if (e.key === 'Escape') closeCompose();
+}
+function submitComment(taskId) {
+  const input = document.getElementById('commentInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  if (!state.comments) state.comments = {};
+  if (!state.comments[taskId]) state.comments[taskId] = [];
+  state.comments[taskId].push({ text, t: new Date().toISOString() });
+  postEvent({ op: 'comment_add', id: taskId, v: text });
+  renderActivePanel(); showToast('💬 Comment added');
+  // Re-open compose on same task
+  setTimeout(() => { activeComposeTaskId = taskId; renderActivePanel();
+    setTimeout(() => { const inp = document.getElementById('commentInput'); if (inp) inp.focus(); }, 50);
+  }, 0);
+}
+function removeComment(taskId, idx) {
+  if (!state.comments || !state.comments[taskId]) return;
+  postEvent({ op: 'comment_rm', id: taskId, idx });
+  state.comments[taskId].splice(idx, 1);
+  if (!state.comments[taskId].length) delete state.comments[taskId];
+  renderActivePanel();
+}
+function resolveComments(taskId) {
+  if (!state.comments || !state.comments[taskId]) return;
+  const count = state.comments[taskId].length;
+  for (let i = count - 1; i >= 0; i--) postEvent({ op: 'comment_rm', id: taskId, idx: i });
+  delete state.comments[taskId];
+  closeCompose();
+  showToast('✅ Resolved');
 }
 
 // ===== TIMER =====
-let timerInterval = null;
-let timerSeconds = 0;
-let timerRunning = false;
+let timerInterval = null, timerSeconds = 0, timerRunning = false;
 
 function startTimer() {
   if (timerRunning) return;
@@ -1147,13 +906,8 @@ function startTimer() {
   document.getElementById('timerPause').disabled = false;
   document.getElementById('timerStop').disabled = false;
   document.getElementById('timerPulse').classList.add('active');
-
-  timerInterval = setInterval(() => {
-    timerSeconds++;
-    updateTimerDisplay();
-  }, 1000);
+  timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000);
 }
-
 function pauseTimer() {
   if (!timerRunning) return;
   timerRunning = false;
@@ -1162,105 +916,265 @@ function pauseTimer() {
   document.getElementById('timerPause').disabled = true;
   document.getElementById('timerPulse').classList.remove('active');
 }
-
 function stopTimer() {
   pauseTimer();
-  const day = parseInt(document.getElementById('timerDay').value);
-  if (!state.timeLog[day]) state.timeLog[day] = 0;
-  state.timeLog[day] += timerSeconds;
-  postEvent({ op: 'time', day: day, v: timerSeconds });
-
-  showToast(`⏱ Logged ${formatTime(timerSeconds)} to Day ${day}`);
-
-  timerSeconds = 0;
-  updateTimerDisplay();
+  const dayId = document.getElementById('timerDay').value;
+  if (!state.timeLog[dayId]) state.timeLog[dayId] = 0;
+  state.timeLog[dayId] += timerSeconds;
+  postEvent({ op: 'time', dayId, v: timerSeconds });
+  const h = Math.floor(timerSeconds / 3600), m = Math.floor((timerSeconds % 3600) / 60);
+  showToast(`⏱ Logged ${h > 0 ? h + 'h ' : ''}${m}m to selected day`);
+  timerSeconds = 0; updateTimerDisplay();
   document.getElementById('timerStop').disabled = true;
-
-  // Re-render to update time logged
-  renderPanels();
-  updateStats();
+  renderActivePanel(); updateStats();
 }
-
 function updateTimerDisplay() {
-  const h = Math.floor(timerSeconds / 3600);
-  const m = Math.floor((timerSeconds % 3600) / 60);
-  const s = timerSeconds % 60;
+  const h = Math.floor(timerSeconds / 3600), m = Math.floor((timerSeconds % 3600) / 60), s = timerSeconds % 60;
   document.getElementById('timerDisplay').textContent =
     String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
 }
 
-function formatTime(totalSec) {
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
-}
-
 // ===== JOURNAL =====
-let currentJournalDay = state.journalDay || 1;
-
-function switchJournalDay(day) {
-  // Save current before switching
+function switchJournalDay(dayId) {
   saveJournalEntry();
-
-  currentJournalDay = day;
-  state.journalDay = day;
-  postEvent({ op: 'set', k: 'journalDay', v: day });
-
-  document.querySelectorAll('.journal-tab').forEach(tab => {
-    tab.classList.toggle('active', parseInt(tab.dataset.jday) === day);
-  });
-
-  document.getElementById('journalText').value = state.journal[day] || '';
-  updateJournalTabDots();
+  state.journalDay = dayId;
+  postEvent({ op: 'set', k: 'journalDay', v: dayId });
+  renderJournal();
 }
-
 function saveJournalEntry() {
-  const text = document.getElementById('journalText').value.trim();
-  if (text) {
-    state.journal[currentJournalDay] = text;
-  } else {
-    delete state.journal[currentJournalDay];
-  }
-  postEvent({ op: 'journal', day: currentJournalDay, v: text });
-  updateJournalTabDots();
+  const textarea = document.getElementById('journalText');
+  if (!textarea) return;
+  const text = textarea.value.trim();
+  const dayId = state.journalDay;
+  if (text) state.journal[dayId] = text;
+  else delete state.journal[dayId];
+  postEvent({ op: 'journal', dayId, v: text });
 }
 
-function updateJournalTabDots() {
-  document.querySelectorAll('.journal-tab').forEach(tab => {
-    const d = parseInt(tab.dataset.jday);
-    if (state.journal[d] && state.journal[d].trim()) {
-      tab.classList.add('has-content');
-    } else {
-      tab.classList.remove('has-content');
+// ===== CELEBRATIONS (Khan Academy-style particle bursts) =====
+const BURST_COLORS = [
+  '#F5C518', '#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4',
+  '#45B7D1', '#96E6A1', '#DDA0DD', '#FF85A2', '#FFDAB9',
+];
+
+const SHAPES = ['circle', 'star', 'diamond', 'sparkle'];
+
+function createBurstCanvas() {
+  let canvas = document.getElementById('burstCanvas');
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = 'burstCanvas';
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99999;';
+    document.body.appendChild(canvas);
+  }
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  return canvas;
+}
+
+let _particles = [];
+let _animFrame = null;
+
+function spawnParticles(x, y, count, opts = {}) {
+  const spread = opts.spread || 1;
+  const sizeMin = opts.sizeMin || 3;
+  const sizeMax = opts.sizeMax || 8;
+  const speedMin = opts.speedMin || 2;
+  const speedMax = opts.speedMax || 8;
+  const gravity = opts.gravity !== undefined ? opts.gravity : 0.12;
+  const colors = opts.colors || BURST_COLORS;
+
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * spread;
+    const speed = speedMin + Math.random() * (speedMax - speedMin);
+    _particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed * (0.5 + Math.random()),
+      vy: Math.sin(angle) * speed * (0.5 + Math.random()) - 2,
+      size: sizeMin + Math.random() * (sizeMax - sizeMin),
+      color: colors[Math.floor(Math.random() * colors.length)],
+      shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.3,
+      gravity,
+      drag: 0.97 + Math.random() * 0.02,
+      life: 1,
+      decay: 0.008 + Math.random() * 0.010,
+      shimmer: Math.random() > 0.5,
+    });
+  }
+
+  if (!_animFrame) tickBurst();
+}
+
+function drawStar(ctx, cx, cy, r, points, rotation) {
+  ctx.beginPath();
+  for (let i = 0; i < points * 2; i++) {
+    const rad = (i % 2 === 0) ? r : r * 0.4;
+    const a = rotation + (Math.PI * i / points);
+    const px = cx + Math.cos(a) * rad;
+    const py = cy + Math.sin(a) * rad;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+}
+
+function drawSparkle(ctx, cx, cy, r, rotation) {
+  ctx.beginPath();
+  for (let i = 0; i < 4; i++) {
+    const a = rotation + (Math.PI * i / 2);
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+  }
+}
+
+function drawDiamond(ctx, cx, cy, r, rotation) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+  ctx.beginPath();
+  ctx.moveTo(0, -r);
+  ctx.lineTo(r * 0.6, 0);
+  ctx.lineTo(0, r);
+  ctx.lineTo(-r * 0.6, 0);
+  ctx.closePath();
+  ctx.restore();
+}
+
+function tickBurst() {
+  const canvas = createBurstCanvas();
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  _particles = _particles.filter(p => p.life > 0);
+
+  if (_particles.length === 0) {
+    _animFrame = null;
+    canvas.remove();
+    return;
+  }
+
+  for (const p of _particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += p.gravity;
+    p.vx *= p.drag;
+    p.vy *= p.drag;
+    p.rotation += p.rotSpeed;
+    p.life -= p.decay;
+
+    const alpha = Math.max(0, p.life);
+    const shimmerAlpha = p.shimmer ? alpha * (0.6 + 0.4 * Math.sin(Date.now() * 0.02 + p.rotation * 10)) : alpha;
+    ctx.globalAlpha = shimmerAlpha;
+
+    if (p.shape === 'circle') {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    } else if (p.shape === 'star') {
+      drawStar(ctx, p.x, p.y, p.size, 5, p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    } else if (p.shape === 'sparkle') {
+      drawSparkle(ctx, p.x, p.y, p.size * 1.5, p.rotation);
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    } else if (p.shape === 'diamond') {
+      drawDiamond(ctx, p.x, p.y, p.size, p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.fill();
     }
+  }
+
+  ctx.globalAlpha = 1;
+  _animFrame = requestAnimationFrame(tickBurst);
+}
+
+// Small burst from a checkbox (every task tick)
+function fireBurst(checkbox) {
+  const rect = checkbox.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+
+  // Main burst — high speed so particles fly across the whole page
+  spawnParticles(x, y, 28, {
+    spread: 2.0,
+    sizeMin: 3, sizeMax: 9,
+    speedMin: 8, speedMax: 18,
+    gravity: 0.06,
+  });
+
+  // Secondary scattered bursts at random positions across the page
+  for (let i = 0; i < 3; i++) {
+    const rx = Math.random() * w;
+    const ry = Math.random() * h * 0.6;
+    setTimeout(() => {
+      spawnParticles(rx, ry, 10, {
+        spread: 1.8,
+        sizeMin: 2, sizeMax: 7,
+        speedMin: 3, speedMax: 9,
+        gravity: 0.07,
+        colors: ['#FFD700', '#F5C518', '#fff', '#FFA500', '#4ECDC4', '#FF6B6B'],
+      });
+    }, 50 + i * 80);
+  }
+
+  // Glitter trail floating upward from checkbox
+  spawnParticles(x, y, 8, {
+    spread: 0.6,
+    sizeMin: 1.5, sizeMax: 5,
+    speedMin: 2, speedMax: 6,
+    gravity: -0.05,
+    colors: ['#FFD700', '#F5C518', '#fff', '#FFA500'],
   });
 }
 
-// ===== CONFETTI =====
-function fireConfetti() {
-  const colors = ['#F5C518', '#e6b800', '#d4a017', '#1a1a1a', '#333', '#F5C518', '#FFD700'];
-  for (let i = 0; i < 60; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    piece.style.left = Math.random() * 100 + 'vw';
-    piece.style.top = '-10px';
-    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-    piece.style.animationDelay = (Math.random() * 0.8) + 's';
-    piece.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
-    const size = Math.random() * 6 + 4;
-    piece.style.width = size + 'px';
-    piece.style.height = size + 'px';
-    document.body.appendChild(piece);
-    setTimeout(() => piece.remove(), 3000);
-  }
+// Big celebration (full day complete)
+function fireDayComplete() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+
+  // Multiple bursts across the screen
+  const burstPoints = [
+    [w * 0.2, h * 0.3], [w * 0.5, h * 0.2], [w * 0.8, h * 0.3],
+    [w * 0.3, h * 0.5], [w * 0.7, h * 0.5],
+  ];
+
+  burstPoints.forEach(([bx, by], i) => {
+    setTimeout(() => {
+      spawnParticles(bx, by, 30, {
+        spread: 1.5,
+        sizeMin: 3, sizeMax: 10,
+        speedMin: 4, speedMax: 12,
+        gravity: 0.15,
+      });
+    }, i * 120);
+  });
+
+  // Shower from top
+  setTimeout(() => {
+    for (let i = 0; i < 40; i++) {
+      setTimeout(() => {
+        spawnParticles(Math.random() * w, -10, 3, {
+          spread: 0.5,
+          sizeMin: 3, sizeMax: 7,
+          speedMin: 0.5, speedMax: 2,
+          gravity: 0.2,
+          colors: ['#F5C518', '#FFD700', '#e6b800', '#FFA500'],
+        });
+      }, i * 30);
+    }
+  }, 400);
 }
 
 // ===== TOAST =====
 function showToast(message) {
   const existing = document.querySelector('.toast');
   if (existing) existing.remove();
-
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.textContent = message;
@@ -1270,312 +1184,234 @@ function showToast(message) {
 
 // ===== RESET =====
 async function resetAll() {
-  if (!confirm('🗑️ Reset ALL progress? This will clear all checkboxes, time logs, and journal entries. This cannot be undone.')) return;
+  if (!confirm('🗑️ Reset ALL progress? Checkboxes, time, journal, and comments will be cleared. Structure (days/tasks) is kept.')) return;
   try {
     const res = await fetch('/api/reset', { method: 'POST' });
-    if (res.ok) {
-      state = await res.json();
-    }
-  } catch (e) {
-    state = { ...DEFAULT_STATE };
-  }
-  renderPanels();
-  updateStats();
-  switchDay(1);
-  switchJournalDay(1);
+    if (res.ok) state = await res.json();
+  } catch { /* ignore */ }
+  activeComposeTaskId = null;
+  renderApp();
   showToast('♻️ All progress reset');
 }
 
-// ===== COMMENTS (always-visible right gutter) =====
-let activeComposeTaskId = null;
-let _gutterRaf = null;
-let _gutterInitialized = false;
-
-function initCommentGutter() {
-  if (_gutterInitialized) return;
-  _gutterInitialized = true;
-
-  // Close compose on click outside
-  document.addEventListener('click', e => {
-    if (activeComposeTaskId &&
-        !e.target.closest('.comment-card') &&
-        !e.target.closest('.comment-trigger')) {
-      closeCompose();
-    }
-  });
-
-  // Reposition cards on scroll/resize
-  const reposition = () => {
-    if (_gutterRaf) cancelAnimationFrame(_gutterRaf);
-    _gutterRaf = requestAnimationFrame(() => positionCommentCards());
-  };
-  window.addEventListener('scroll', reposition, { passive: true });
-  window.addEventListener('resize', reposition, { passive: true });
-}
-
-function updateCommentGutter() {
-  initCommentGutter();
-
-  // Remove old cards
-  document.querySelectorAll('.comment-card').forEach(el => el.remove());
-
-  const allComments = state.comments || {};
-  const taskIds = new Set(Object.keys(allComments));
-  if (activeComposeTaskId) taskIds.add(activeComposeTaskId);
-
-  const cards = [];
-  taskIds.forEach(taskId => {
-    const taskEl = document.getElementById('task-' + taskId);
-    if (!taskEl || taskEl.offsetParent === null) return;
-    const comments = allComments[taskId] || [];
-    if (comments.length === 0 && taskId !== activeComposeTaskId) return;
-    cards.push({ taskId, comments, isComposing: taskId === activeComposeTaskId });
-  });
-
-  cards.forEach(card => {
-    const el = document.createElement('div');
-    el.className = 'comment-card' + (card.isComposing ? ' composing' : '');
-    el.dataset.taskId = card.taskId;
-
-    let itemsHtml = card.comments.map((c, i) => `
-      <div class="comment-item">
-        <p class="comment-text">${escapeHtml(c.text)}</p>
-        <div class="comment-meta">
-          <span class="comment-time">${formatCommentTime(c.t)}</span>
-          <button class="comment-delete" onclick="event.stopPropagation(); removeComment('${card.taskId}', ${i})">Delete</button>
-        </div>
-      </div>
-    `).join('');
-
-    const composeHtml = card.isComposing ? `
-      <div class="comment-compose">
-        <textarea class="comment-input" id="commentInput" placeholder="Reply..." rows="1"
-          onclick="event.stopPropagation()"
-          onkeydown="handleCommentKeydown(event, '${card.taskId}')"></textarea>
-        <div class="comment-compose-actions">
-          <button class="comment-submit" onclick="event.stopPropagation(); submitComment('${card.taskId}')">Comment</button>
-          ${card.comments.length > 0 ? `<button class="comment-resolve" onclick="event.stopPropagation(); resolveComments('${card.taskId}')">Resolve</button>` : ''}
-        </div>
-      </div>
-    ` : '';
-
-    el.innerHTML = (itemsHtml ? '<div class="comment-list">' + itemsHtml + '</div>' : '') + composeHtml;
-
-    // Prevent card click from closing compose
-    el.addEventListener('click', e => e.stopPropagation());
-
-    document.body.appendChild(el);
-  });
-
-  positionCommentCards();
-
-  // Focus compose input
-  if (activeComposeTaskId) {
-    setTimeout(() => {
-      const input = document.getElementById('commentInput');
-      if (input && document.activeElement.tagName !== 'TEXTAREA') input.focus();
-    }, 30);
-  }
-}
-
-function positionCommentCards() {
-  const appEl = document.querySelector('.app');
-  if (!appEl) return;
-  const appRect = appEl.getBoundingClientRect();
-  const cards = Array.from(document.querySelectorAll('.comment-card'));
-
-  // Position each card at task Y, right of app
-  const positioned = [];
-  cards.forEach(card => {
-    const taskEl = document.getElementById('task-' + card.dataset.taskId);
-    if (!taskEl || taskEl.offsetParent === null) {
-      card.style.display = 'none';
-      return;
-    }
-
-    const taskRect = taskEl.getBoundingClientRect();
-    // Hide if task is offscreen
-    if (taskRect.bottom < 0 || taskRect.top > window.innerHeight + 100) {
-      card.style.opacity = '0';
-      card.style.pointerEvents = 'none';
-      return;
-    }
-
-    card.style.display = 'flex';
-    card.style.opacity = '1';
-    card.style.pointerEvents = 'auto';
-    card.style.left = (appRect.right + 16) + 'px';
-    card._desiredTop = taskRect.top;
-    positioned.push(card);
-  });
-
-  // Sort by desired top, then prevent overlap
-  positioned.sort((a, b) => a._desiredTop - b._desiredTop);
-  let lastBottom = 0;
-  positioned.forEach(card => {
-    let top = card._desiredTop;
-    if (top < lastBottom + 6) top = lastBottom + 6;
-    // Keep in viewport
-    const h = card.offsetHeight || 80;
-    if (top + h > window.innerHeight - 10) top = window.innerHeight - h - 10;
-    if (top < 10) top = 10;
-    card.style.top = top + 'px';
-    lastBottom = top + h;
-  });
-}
-
-function toggleCommentCard(taskId) {
-  if (activeComposeTaskId === taskId) {
-    closeCompose();
+// ===== DATA PANEL (Export / Import) =====
+function toggleDataPanel() {
+  const panel = document.getElementById('dataPanel');
+  const btn = document.getElementById('dataToggle');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    btn.classList.add('active');
   } else {
-    openCompose(taskId);
+    panel.style.display = 'none';
+    btn.classList.remove('active');
   }
 }
 
-function openCompose(taskId) {
-  document.querySelectorAll('.task-item.commenting').forEach(el => el.classList.remove('commenting'));
-  activeComposeTaskId = taskId;
-  const taskEl = document.getElementById('task-' + taskId);
-  if (taskEl) taskEl.classList.add('commenting');
-  updateCommentGutter();
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
 }
 
-function closeCompose() {
-  document.querySelectorAll('.task-item.commenting').forEach(el => el.classList.remove('commenting'));
-  activeComposeTaskId = null;
-  updateCommentGutter();
-}
-
-function formatCommentTime(isoStr) {
-  if (!isoStr) return '';
+async function exportState() {
   try {
-    const d = new Date(isoStr);
-    const now = new Date();
-    const diff = now - d;
-    if (diff < 60000) return 'just now';
-    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
-    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
-    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  } catch { return ''; }
-}
-
-function handleCommentKeydown(e, taskId) {
-  e.stopPropagation();
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-    e.preventDefault();
-    submitComment(taskId);
-  } else if (e.key === 'Escape') {
-    closeCompose();
+    const res = await fetch('/api/export/state');
+    const blob = await res.blob();
+    downloadBlob(blob, 'tracker-state.json');
+    showToast('📦 State exported');
+  } catch (err) {
+    showToast('⚠️ Export failed: ' + err.message);
   }
 }
 
-function submitComment(taskId) {
-  const input = document.getElementById('commentInput');
-  if (!input) return;
-  const text = input.value.trim();
-  if (!text) return;
-
-  if (!state.comments) state.comments = {};
-  if (!state.comments[taskId]) state.comments[taskId] = [];
-  state.comments[taskId].push({ text, t: new Date().toISOString() });
-  postEvent({ op: 'comment_add', id: taskId, v: text });
-
-  updateCommentGutter();
-  updateCommentIndicators();
-  showToast('💬 Comment added');
-}
-
-function removeComment(taskId, idx) {
-  if (!state.comments || !state.comments[taskId]) return;
-  postEvent({ op: 'comment_rm', id: taskId, idx: idx });
-  state.comments[taskId].splice(idx, 1);
-  if (state.comments[taskId].length === 0) delete state.comments[taskId];
-
-  updateCommentGutter();
-  updateCommentIndicators();
-}
-
-function resolveComments(taskId) {
-  if (!state.comments || !state.comments[taskId]) return;
-  const count = state.comments[taskId].length;
-  for (let i = count - 1; i >= 0; i--) {
-    postEvent({ op: 'comment_rm', id: taskId, idx: i });
+async function exportSyllabus() {
+  try {
+    const res = await fetch('/api/export/syllabus');
+    const blob = await res.blob();
+    downloadBlob(blob, 'syllabus.toml');
+    showToast('📄 Syllabus exported');
+  } catch (err) {
+    showToast('⚠️ Export failed: ' + err.message);
   }
-  delete state.comments[taskId];
-
-  closeCompose();
-  updateCommentIndicators();
-  showToast('✅ Resolved');
 }
 
-function updateCommentIndicators() {
-  document.querySelectorAll('.comment-trigger').forEach(trigger => {
-    const taskId = trigger.dataset.taskId;
-    const count = (state.comments && state.comments[taskId] && state.comments[taskId].length) || 0;
-    const badge = trigger.querySelector('.comment-count');
-    if (count > 0) {
-      trigger.classList.add('has-comments');
-      if (badge) badge.textContent = count;
-    } else {
-      trigger.classList.remove('has-comments');
-      if (badge) badge.textContent = '';
+async function exportEvents() {
+  try {
+    const res = await fetch('/api/export/events');
+    const blob = await res.blob();
+    downloadBlob(blob, 'db.ndjson');
+    showToast('📋 Events exported');
+  } catch (err) {
+    showToast('⚠️ Export failed: ' + err.message);
+  }
+}
+
+function importStateFile() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!confirm(`Import "${file.name}"? This will REPLACE all current data (progress, journal, comments, structure).`)) return;
+    try {
+      const text = await file.text();
+      const res = await fetch('/api/import/state', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: text,
+      });
+      const result = await res.json();
+      if (result.ok) {
+        // Reload state from server
+        await loadState();
+        activeComposeTaskId = null;
+        renderApp();
+        if (state.meta && state.meta.title) document.title = state.meta.title;
+        showToast(`📦 State imported — ${result.days} days loaded`);
+      } else {
+        showToast('⚠️ Import failed: ' + (result.error || 'Unknown error'));
+      }
+    } catch (err) {
+      showToast('⚠️ Import failed: ' + err.message);
     }
+  };
+  input.click();
+}
+
+function importSyllabusFile() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.toml';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!confirm(`Load syllabus from "${file.name}"? This will REPLACE the current structure and RESET all progress.`)) return;
+    try {
+      const text = await file.text();
+      const res = await fetch('/api/import/syllabus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: text,
+      });
+      const result = await res.json();
+      if (result.ok) {
+        await loadState();
+        activeComposeTaskId = null;
+        renderApp();
+        if (state.meta && state.meta.title) document.title = state.meta.title;
+        showToast(`📄 Syllabus loaded — ${result.days} days`);
+      } else {
+        showToast('⚠️ Import failed: ' + (result.error || 'Unknown error'));
+      }
+    } catch (err) {
+      showToast('⚠️ Import failed: ' + err.message);
+    }
+  };
+  input.click();
+}
+
+// ===== TROPHY PILE (completed tasks gravity wall) =====
+const TROPHY_KEY = 'study-tracker-trophies';
+
+function getTrophies() {
+  try { return JSON.parse(localStorage.getItem(TROPHY_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveTrophies(trophies) {
+  localStorage.setItem(TROPHY_KEY, JSON.stringify(trophies));
+}
+
+function ensureTrophyContainer() {
+  let container = document.getElementById('trophyPile');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'trophyPile';
+    container.className = 'trophy-pile';
+    container.innerHTML = `
+      <div class="trophy-header">
+        <span class="trophy-counter"><span id="trophyCount">0</span> done</span>
+        <button class="trophy-clear" onclick="clearTrophies()" title="Clear trophy pile">✕</button>
+      </div>
+      <div class="trophy-chips" id="trophyChips"></div>
+    `;
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+function renderTrophyChips(animate) {
+  const container = ensureTrophyContainer();
+  const chipsEl = document.getElementById('trophyChips');
+  const trophies = getTrophies();
+  document.getElementById('trophyCount').textContent = trophies.length;
+
+  if (trophies.length === 0) {
+    container.classList.remove('visible');
+    return;
+  }
+  container.classList.add('visible');
+
+  // Only render what's there — don't re-render everything for perf
+  chipsEl.innerHTML = '';
+  trophies.forEach((t, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'trophy-chip';
+    if (animate && i === trophies.length - 1) chip.classList.add('trophy-drop');
+    // Random slight rotation for gravity-pile feel
+    const rot = (Math.random() - 0.5) * 8;
+    chip.style.transform = `rotate(${rot}deg)`;
+    // Truncate long texts
+    chip.textContent = t.text.length > 50 ? t.text.slice(0, 47) + '…' : t.text;
+    chip.title = t.text;
+    chipsEl.appendChild(chip);
   });
+}
+
+function dropTrophy(text) {
+  const trophies = getTrophies();
+  // Avoid duplicates
+  if (trophies.some(t => t.text === text)) return;
+  trophies.push({ text, ts: Date.now() });
+  saveTrophies(trophies);
+  renderTrophyChips(true);
+}
+
+function removeTrophy(text) {
+  let trophies = getTrophies();
+  trophies = trophies.filter(t => t.text !== text);
+  saveTrophies(trophies);
+  renderTrophyChips(false);
+}
+
+function clearTrophies() {
+  if (!confirm('Clear all completed task trophies?')) return;
+  localStorage.removeItem(TROPHY_KEY);
+  renderTrophyChips(false);
+  showToast('🧹 Trophy pile cleared');
+}
+
+function loadTrophyPile() {
+  ensureTrophyContainer();
+  renderTrophyChips(false);
 }
 
 // ===== INIT =====
 async function init() {
-  // Load persisted state from SQLite before rendering anything
-  await loadStateFromServer();
-  currentJournalDay = state.journalDay || 1;
-
-  createParticles();
-  renderPanels();
-  updateStats();
-
-  // Day pills
-  document.querySelectorAll('.day-pill').forEach(pill => {
-    pill.addEventListener('click', () => switchDay(parseInt(pill.dataset.day)));
-  });
-  switchDay(state.activeDay);
-
-  // Timer
-  document.getElementById('timerStart').addEventListener('click', startTimer);
-  document.getElementById('timerPause').addEventListener('click', pauseTimer);
-  document.getElementById('timerStop').addEventListener('click', stopTimer);
-
-  // Sync timer dropdown with active day
-  document.getElementById('timerDay').value = state.activeDay;
-
-  // Journal
-  document.querySelectorAll('.journal-tab').forEach(tab => {
-    tab.addEventListener('click', () => switchJournalDay(parseInt(tab.dataset.jday)));
-  });
-  document.getElementById('journalText').value = state.journal[currentJournalDay] || '';
-  updateJournalTabDots();
-
-  document.getElementById('journalSave').addEventListener('click', function() {
-    saveJournalEntry();
-    this.classList.add('saved');
-    this.textContent = '✓ Saved';
-    setTimeout(() => {
-      this.classList.remove('saved');
-      this.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Note`;
-    }, 1500);
-  });
-
-  // Reset
-  document.getElementById('resetBtn').addEventListener('click', resetAll);
-
-  // Theme toggle
-  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-
-  // Day pill sync with timer dropdown
-  document.querySelectorAll('.day-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.getElementById('timerDay').value = parseInt(pill.dataset.day);
-    });
-  });
+  await loadState();
+  // Ensure sensible defaults
+  if (!state.activeDay && state.days.length) state.activeDay = state.days[0].id;
+  if (!state.journalDay && state.days.length) state.journalDay = state.days[0].id;
+  renderApp();
+  // Update page title from meta
+  if (state.meta && state.meta.title) document.title = state.meta.title;
+  // Load trophy pile from localStorage
+  loadTrophyPile();
 }
 
 document.addEventListener('DOMContentLoaded', init);
