@@ -459,6 +459,9 @@ function renderTask(task, dayId) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span class="comment-count">${commentCount || ''}</span>
       </button>
+      <button class="task-action-btn copy-btn" onclick="event.stopPropagation(); copyTaskText('${task.id}', this)" title="Copy text">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
       <button class="task-action-btn danger" onclick="event.stopPropagation(); removeTask('${task.id}')" title="Delete task">🗑️</button>
     </div>
   </div>`;
@@ -748,6 +751,31 @@ function removeTask(taskId) {
   renderActivePanel();
   updateStats();
   showToast('🗑️ Task removed');
+}
+
+function copyTaskText(taskId, btn) {
+  let text = '';
+  state.days.forEach(day => {
+    day.blocks.forEach(block => {
+      block.tasks.forEach(t => { if (t.id === taskId) text = t.text; });
+    });
+  });
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.title = 'Copied!';
+    showToast('📋 Copied to clipboard');
+    setTimeout(() => { btn.classList.remove('copied'); btn.title = 'Copy text'; }, 1500);
+  }).catch(() => {
+    // Fallback for non-HTTPS
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    showToast('📋 Copied to clipboard');
+    setTimeout(() => btn.classList.remove('copied'), 1500);
+  });
 }
 
 // ===== CUSTOM RESOURCES =====

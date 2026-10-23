@@ -1094,6 +1094,21 @@ h1.editing .inline-edit-input {
 .task-action-btn:hover { background: var(--bg-surface); }
 .task-action-btn.danger:hover { background: var(--red-dim); color: var(--red); }
 
+.task-action-btn.copy-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.task-action-btn.copy-btn:hover {
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.task-action-btn.copy-btn.copied {
+  color: var(--green);
+  background: var(--green-dim);
+}
+
 /* ===== TASK RESOURCES ===== */
 .task-resources {
   display: flex;
