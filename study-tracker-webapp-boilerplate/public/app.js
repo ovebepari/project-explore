@@ -14,115 +14,39 @@ applyTheme(localStorage.getItem('theme-cache') || 'dark');
 // ===== DIM / FOCUS MODE =====
 let dimMode = localStorage.getItem('dim-mode') === 'true';
 
-// ── Zen Audio Engine (Web Audio API, zero file size) ──
+// ── Zen Audio — looping lo-fi study music ──
 const zenAudio = (() => {
-  let ctx, masterGain;
+  const audio = new Audio('zen-music.mp3');
+  audio.loop = true;
+  audio.volume = 0;
   let running = false;
+  let fadeTimer = null;
 
-  function createBrownNoise(audioCtx) {
-    const bufferSize = audioCtx.sampleRate * 2;
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    let last = 0;
-    for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1;
-      last = (last + 0.02 * white) / 1.02;
-      data[i] = last * 3.5;
+  function fade(target, duration) {
+    if (fadeTimer) cancelAnimationFrame(fadeTimer);
+    const start = audio.volume;
+    const diff = target - start;
+    const startTime = performance.now();
+    function step(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      audio.volume = start + diff * t;
+      if (t < 1) fadeTimer = requestAnimationFrame(step);
     }
-    const source = audioCtx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    return source;
+    fadeTimer = requestAnimationFrame(step);
   }
 
   function start() {
     if (running) return;
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
-    // Resume context (browsers suspend until user gesture)
-    if (ctx.state === 'suspended') ctx.resume();
-
-    // Master gain — fade in over 2s
-    masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0.001, ctx.currentTime);
-    masterGain.gain.exponentialRampToValueAtTime(0.30, ctx.currentTime + 2);
-    masterGain.connect(ctx.destination);
-
-    // LFO for breathing volume swell (~12s cycle)
-    const lfo = ctx.createOscillator();
-    lfo.type = 'sine';
-    lfo.frequency.value = 0.08;
-    const lfoGain = ctx.createGain();
-    lfoGain.gain.value = 0.08;
-    lfo.connect(lfoGain);
-    lfoGain.connect(masterGain.gain);
-    lfo.start();
-
-    // Pad 1: C4 (261.63 Hz) — triangle for warmth
-    const pad1 = ctx.createOscillator();
-    pad1.type = 'triangle';
-    pad1.frequency.value = 261.63;
-    const g1 = ctx.createGain();
-    g1.gain.value = 0.35;
-    pad1.connect(g1);
-    g1.connect(masterGain);
-    pad1.start();
-
-    // Pad 2: E4 (329.63 Hz) — slightly detuned
-    const pad2 = ctx.createOscillator();
-    pad2.type = 'triangle';
-    pad2.frequency.value = 329.63;
-    pad2.detune.value = -4;
-    const g2 = ctx.createGain();
-    g2.gain.value = 0.20;
-    pad2.connect(g2);
-    g2.connect(masterGain);
-    pad2.start();
-
-    // Pad 3: G4 (392 Hz) — quiet fifth
-    const pad3 = ctx.createOscillator();
-    pad3.type = 'sine';
-    pad3.frequency.value = 392.0;
-    const g3 = ctx.createGain();
-    g3.gain.value = 0.10;
-    pad3.connect(g3);
-    g3.connect(masterGain);
-    pad3.start();
-
-    // Sub bass: C3 (130.81 Hz) — felt more than heard
-    const sub = ctx.createOscillator();
-    sub.type = 'sine';
-    sub.frequency.value = 130.81;
-    const gSub = ctx.createGain();
-    gSub.gain.value = 0.15;
-    sub.connect(gSub);
-    gSub.connect(masterGain);
-    sub.start();
-
-    // Brown noise — low-pass filtered for rain-like texture
-    const noise = createBrownNoise(ctx);
-    const nf = ctx.createBiquadFilter();
-    nf.type = 'lowpass';
-    nf.frequency.value = 400;
-    nf.Q.value = 0.5;
-    const gn = ctx.createGain();
-    gn.gain.value = 0.12;
-    noise.connect(nf);
-    nf.connect(gn);
-    gn.connect(masterGain);
-    noise.start();
-
     running = true;
+    audio.play().then(() => fade(0.45, 1500)).catch(() => {});
   }
 
   function stop() {
-    if (!running || !ctx) return;
-    const t = ctx.currentTime;
-    masterGain.gain.setValueAtTime(masterGain.gain.value, t);
-    masterGain.gain.exponentialRampToValueAtTime(0.001, t + 2);
-    const c = ctx;
-    setTimeout(() => { c.close().catch(() => {}); }, 2200);
+    if (!running) return;
     running = false;
-    ctx = null;
+    fade(0, 1500);
+    setTimeout(() => { if (!running) audio.pause(); }, 1600);
   }
 
   return { start, stop, get running() { return running; } };
