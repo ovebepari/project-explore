@@ -13,12 +13,116 @@ applyTheme(localStorage.getItem('theme-cache') || 'dark');
 
 // ===== DIM / FOCUS MODE =====
 let dimMode = localStorage.getItem('dim-mode') === 'true';
+
+// ── Zen Audio Engine (Web Audio API, zero file size) ──
+const zenAudio = (() => {
+  let ctx, masterGain, drone1, drone2, noiseNode, noiseGain, lfo, lfoGain;
+  let running = false;
+
+  function createBrownNoise(audioCtx) {
+    const bufferSize = audioCtx.sampleRate * 2;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      last = (last + 0.02 * white) / 1.02;
+      data[i] = last * 3.5;
+    }
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    return source;
+  }
+
+  function start() {
+    if (running) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Master gain — fade target
+    masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, ctx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 2);
+    masterGain.connect(ctx.destination);
+
+    // LFO for breathing swell
+    lfo = ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.08; // one breath ~12s
+    lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.06;
+    lfo.connect(lfoGain);
+    lfoGain.connect(masterGain.gain);
+    lfo.start();
+
+    // Drone 1: C2 (65.41 Hz)
+    drone1 = ctx.createOscillator();
+    drone1.type = 'sine';
+    drone1.frequency.value = 65.41;
+    const d1Gain = ctx.createGain();
+    d1Gain.gain.value = 0.5;
+    drone1.connect(d1Gain);
+    d1Gain.connect(masterGain);
+    drone1.start();
+
+    // Drone 2: C2 slightly detuned (+5 cents) for warmth
+    drone2 = ctx.createOscillator();
+    drone2.type = 'sine';
+    drone2.frequency.value = 65.41;
+    drone2.detune.value = 5;
+    const d2Gain = ctx.createGain();
+    d2Gain.gain.value = 0.35;
+    drone2.connect(d2Gain);
+    d2Gain.connect(masterGain);
+    drone2.start();
+
+    // Third harmonic — G2 (98 Hz) very quiet
+    const drone3 = ctx.createOscillator();
+    drone3.type = 'sine';
+    drone3.frequency.value = 98;
+    const d3Gain = ctx.createGain();
+    d3Gain.gain.value = 0.12;
+    drone3.connect(d3Gain);
+    d3Gain.connect(masterGain);
+    drone3.start();
+
+    // Brown noise through a low-pass filter for texture
+    noiseNode = createBrownNoise(ctx);
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.value = 200;
+    noiseFilter.Q.value = 0.7;
+    noiseGain = ctx.createGain();
+    noiseGain.gain.value = 0.08;
+    noiseNode.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(masterGain);
+    noiseNode.start();
+
+    running = true;
+  }
+
+  function stop() {
+    if (!running || !ctx) return;
+    // Fade out over 2s then close
+    masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 2);
+    const c = ctx;
+    setTimeout(() => { c.close().catch(() => {}); }, 2200);
+    running = false;
+    ctx = null;
+  }
+
+  return { start, stop, get running() { return running; } };
+})();
+
 function toggleDimMode() {
   dimMode = !dimMode;
   localStorage.setItem('dim-mode', dimMode);
   document.documentElement.classList.toggle('dim-mode', dimMode);
   const btn = document.getElementById('dimToggle');
   if (btn) btn.classList.toggle('active', dimMode);
+  // Toggle zen audio
+  if (dimMode) zenAudio.start(); else zenAudio.stop();
 }
 function setFocusedBlock(blockCard) {
   if (!dimMode) return;
