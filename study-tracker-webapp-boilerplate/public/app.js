@@ -51,6 +51,30 @@ const zenAudio = (() => {
 
   return { start, stop, get running() { return running; } };
 })();
+// ── Zen Focus Reminder (browser notifications) ──
+let zenReminderInterval = null;
+const ZEN_NUDGES = [
+  '🌿 Your study session is waiting…',
+  '📖 Come back and focus!',
+  '🧘 Zen mode is still on — time to study.',
+  '🎯 Stay on track, get back to your tasks!',
+  '💡 5 minutes gone — are you still studying?',
+];
+
+function startZenReminder() {
+  stopZenReminder();
+  if (Notification.permission === 'default') Notification.requestPermission();
+  zenReminderInterval = setInterval(() => {
+    if (!dimMode || !document.hidden) return;
+    if (Notification.permission !== 'granted') return;
+    const msg = ZEN_NUDGES[Math.floor(Math.random() * ZEN_NUDGES.length)];
+    new Notification('Study Tracker — Zen Mode', { body: msg, icon: '🌿', silent: false });
+  }, 5 * 60 * 1000);
+}
+
+function stopZenReminder() {
+  if (zenReminderInterval) { clearInterval(zenReminderInterval); zenReminderInterval = null; }
+}
 
 function toggleDimMode() {
   dimMode = !dimMode;
@@ -58,8 +82,9 @@ function toggleDimMode() {
   document.documentElement.classList.toggle('dim-mode', dimMode);
   const btn = document.getElementById('dimToggle');
   if (btn) btn.classList.toggle('active', dimMode);
-  // Toggle zen audio
-  if (dimMode) zenAudio.start(); else zenAudio.stop();
+  // Toggle zen audio + reminders
+  if (dimMode) { zenAudio.start(); startZenReminder(); }
+  else { zenAudio.stop(); stopZenReminder(); }
 }
 function setFocusedBlock(blockCard) {
   if (!dimMode) return;
