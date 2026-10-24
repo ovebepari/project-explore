@@ -16,7 +16,7 @@ let dimMode = localStorage.getItem('dim-mode') === 'true';
 
 // ── Zen Audio Engine (Web Audio API, zero file size) ──
 const zenAudio = (() => {
-  let ctx, masterGain, drone1, drone2, noiseNode, noiseGain, lfo, lfoGain;
+  let ctx, masterGain;
   let running = false;
 
   function createBrownNoise(audioCtx) {
@@ -38,74 +38,87 @@ const zenAudio = (() => {
   function start() {
     if (running) return;
     ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Resume context (browsers suspend until user gesture)
+    if (ctx.state === 'suspended') ctx.resume();
 
-    // Master gain — fade target
+    // Master gain — fade in over 2s
     masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0, ctx.currentTime);
-    masterGain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 2);
+    masterGain.gain.setValueAtTime(0.001, ctx.currentTime);
+    masterGain.gain.exponentialRampToValueAtTime(0.30, ctx.currentTime + 2);
     masterGain.connect(ctx.destination);
 
-    // LFO for breathing swell
-    lfo = ctx.createOscillator();
+    // LFO for breathing volume swell (~12s cycle)
+    const lfo = ctx.createOscillator();
     lfo.type = 'sine';
-    lfo.frequency.value = 0.08; // one breath ~12s
-    lfoGain = ctx.createGain();
-    lfoGain.gain.value = 0.06;
+    lfo.frequency.value = 0.08;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.08;
     lfo.connect(lfoGain);
     lfoGain.connect(masterGain.gain);
     lfo.start();
 
-    // Drone 1: C2 (65.41 Hz)
-    drone1 = ctx.createOscillator();
-    drone1.type = 'sine';
-    drone1.frequency.value = 65.41;
-    const d1Gain = ctx.createGain();
-    d1Gain.gain.value = 0.5;
-    drone1.connect(d1Gain);
-    d1Gain.connect(masterGain);
-    drone1.start();
+    // Pad 1: C4 (261.63 Hz) — triangle for warmth
+    const pad1 = ctx.createOscillator();
+    pad1.type = 'triangle';
+    pad1.frequency.value = 261.63;
+    const g1 = ctx.createGain();
+    g1.gain.value = 0.35;
+    pad1.connect(g1);
+    g1.connect(masterGain);
+    pad1.start();
 
-    // Drone 2: C2 slightly detuned (+5 cents) for warmth
-    drone2 = ctx.createOscillator();
-    drone2.type = 'sine';
-    drone2.frequency.value = 65.41;
-    drone2.detune.value = 5;
-    const d2Gain = ctx.createGain();
-    d2Gain.gain.value = 0.35;
-    drone2.connect(d2Gain);
-    d2Gain.connect(masterGain);
-    drone2.start();
+    // Pad 2: E4 (329.63 Hz) — slightly detuned
+    const pad2 = ctx.createOscillator();
+    pad2.type = 'triangle';
+    pad2.frequency.value = 329.63;
+    pad2.detune.value = -4;
+    const g2 = ctx.createGain();
+    g2.gain.value = 0.20;
+    pad2.connect(g2);
+    g2.connect(masterGain);
+    pad2.start();
 
-    // Third harmonic — G2 (98 Hz) very quiet
-    const drone3 = ctx.createOscillator();
-    drone3.type = 'sine';
-    drone3.frequency.value = 98;
-    const d3Gain = ctx.createGain();
-    d3Gain.gain.value = 0.12;
-    drone3.connect(d3Gain);
-    d3Gain.connect(masterGain);
-    drone3.start();
+    // Pad 3: G4 (392 Hz) — quiet fifth
+    const pad3 = ctx.createOscillator();
+    pad3.type = 'sine';
+    pad3.frequency.value = 392.0;
+    const g3 = ctx.createGain();
+    g3.gain.value = 0.10;
+    pad3.connect(g3);
+    g3.connect(masterGain);
+    pad3.start();
 
-    // Brown noise through a low-pass filter for texture
-    noiseNode = createBrownNoise(ctx);
-    const noiseFilter = ctx.createBiquadFilter();
-    noiseFilter.type = 'lowpass';
-    noiseFilter.frequency.value = 200;
-    noiseFilter.Q.value = 0.7;
-    noiseGain = ctx.createGain();
-    noiseGain.gain.value = 0.08;
-    noiseNode.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(masterGain);
-    noiseNode.start();
+    // Sub bass: C3 (130.81 Hz) — felt more than heard
+    const sub = ctx.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.value = 130.81;
+    const gSub = ctx.createGain();
+    gSub.gain.value = 0.15;
+    sub.connect(gSub);
+    gSub.connect(masterGain);
+    sub.start();
+
+    // Brown noise — low-pass filtered for rain-like texture
+    const noise = createBrownNoise(ctx);
+    const nf = ctx.createBiquadFilter();
+    nf.type = 'lowpass';
+    nf.frequency.value = 400;
+    nf.Q.value = 0.5;
+    const gn = ctx.createGain();
+    gn.gain.value = 0.12;
+    noise.connect(nf);
+    nf.connect(gn);
+    gn.connect(masterGain);
+    noise.start();
 
     running = true;
   }
 
   function stop() {
     if (!running || !ctx) return;
-    // Fade out over 2s then close
-    masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 2);
+    const t = ctx.currentTime;
+    masterGain.gain.setValueAtTime(masterGain.gain.value, t);
+    masterGain.gain.exponentialRampToValueAtTime(0.001, t + 2);
     const c = ctx;
     setTimeout(() => { c.close().catch(() => {}); }, 2200);
     running = false;
