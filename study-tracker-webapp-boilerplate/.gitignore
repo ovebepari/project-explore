@@ -1,8 +1,2 @@
-tracker.db
-tracker.db.migrated
-*.db
-*.db.*
-db.json
-db.ndjson
 __pycache__/
 *.pyc
