@@ -156,23 +156,41 @@ def parse_toml_str(text):
     """Parse a subset of TOML sufficient for syllabus files."""
     result = {}
     current = result
-    for raw_line in text.split('\n'):
-        line = raw_line.strip()
+    lines = text.split('\n')
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
         if not line or line.startswith('#'):
+            i += 1
             continue
         if line.startswith('[[') and line.endswith(']]'):
             path = line[2:-2].strip().split('.')
             current = _navigate_aot(result, path)
+            i += 1
             continue
-        if line.startswith('[') and line.endswith(']'):
+        # Check for [table] but NOT [array_value — bracket count must balance
+        if line.startswith('[') and line.endswith(']') and '=' not in line:
             path = line[1:-1].strip().split('.')
             current = _navigate_table(result, path)
+            i += 1
             continue
         if '=' in line:
             eq = line.index('=')
             key = line[:eq].strip()
             val_str = _strip_inline_comment(line[eq + 1:].strip())
+            # Handle multi-line arrays/inline-tables: join lines until balanced
+            open_sq = val_str.count('[') - val_str.count(']')
+            open_cu = val_str.count('{') - val_str.count('}')
+            while (open_sq > 0 or open_cu > 0) and i + 1 < len(lines):
+                i += 1
+                next_line = lines[i].strip()
+                if not next_line or next_line.startswith('#'):
+                    continue
+                val_str += ' ' + next_line
+                open_sq = val_str.count('[') - val_str.count(']')
+                open_cu = val_str.count('{') - val_str.count('}')
             current[key] = _parse_value(val_str)
+        i += 1
     return result
 
 
