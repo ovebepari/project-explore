@@ -66,3 +66,5 @@
 {"op": "task", "id": "day-5-blk-1-task-1", "v": true, "t": "2026-10-24T11:44:40Z"}
 {"op": "task_add", "blockId": "day-5-blk-1", "task": {"id": "task-1792843150336-unxqv", "text": "VLLM Details, Keywords analysis", "resources": []}, "t": "2026-10-24T11:59:10Z"}
 {"op": "res_add", "id": "task-1792843150336-unxqv", "label": "vLLM tech", "url": "https://docs.vllm.ai/en/latest/", "t": "2026-10-24T11:59:26Z"}
+{"op": "task_add", "blockId": "day-5-blk-1", "task": {"id": "task-1792843743950-qhuyu", "text": "Mixture of Experts Models", "resources": []}, "t": "2026-10-24T12:09:03Z"}
+{"op": "res_add", "id": "task-1792843743950-qhuyu", "label": "HuggingFace MoE intro", "url": "https://huggingface.co/blog/moe", "t": "2026-10-24T12:09:16Z"}
