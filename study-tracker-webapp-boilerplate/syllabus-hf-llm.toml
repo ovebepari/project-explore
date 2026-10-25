@@ -5,7 +5,7 @@ subtitle = "12 chapters — from Transformer fundamentals to building reasoning 
 [[days]]
 title = "Chapter 0: Setup"
 subtitle = ""
-label = "Ch 0"
+label = "Setup"
 
 [[days.blocks]]
 title = "Lessons"
@@ -19,7 +19,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 1: Transformer models"
 subtitle = ""
-label = "Ch 1"
+label = "Transformers"
 
 [[days.blocks]]
 title = "Part 1"
@@ -83,7 +83,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 2: Using 🤗 Transformers"
 subtitle = ""
-label = "Ch 2"
+label = "Pipelines"
 
 [[days.blocks]]
 title = "Part 1"
@@ -139,7 +139,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 3: Fine-tuning a pretrained model"
 subtitle = ""
-label = "Ch 3"
+label = "Fine-tuning"
 
 [[days.blocks]]
 title = "Part 1"
@@ -182,7 +182,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 4: Sharing models and tokenizers"
 subtitle = ""
-label = "Ch 4"
+label = "Sharing"
 
 [[days.blocks]]
 title = "Part 1"
@@ -221,7 +221,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 5: The 🤗 Datasets library"
 subtitle = ""
-label = "Ch 5"
+label = "Datasets"
 
 [[days.blocks]]
 title = "Part 1"
@@ -268,7 +268,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 6: The 🤗 Tokenizers library"
 subtitle = ""
-label = "Ch 6"
+label = "Tokenizers"
 
 [[days.blocks]]
 title = "Part 1"
@@ -332,7 +332,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 7: Classical NLP tasks"
 subtitle = ""
-label = "Ch 7"
+label = "NLP Tasks"
 
 [[days.blocks]]
 title = "Part 1"
@@ -388,7 +388,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 8: How to ask for help"
 subtitle = ""
-label = "Ch 8"
+label = "Debugging"
 
 [[days.blocks]]
 title = "Part 1"
@@ -431,7 +431,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 9: Building and sharing demos"
 subtitle = "I trained a model, but how can I show it off?"
-label = "Ch 9"
+label = "Demos"
 
 [[days.blocks]]
 title = "Part 1"
@@ -487,7 +487,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 10: Curate high-quality datasets"
 subtitle = "How to use Argilla to create amazing datasets"
-label = "Ch 10"
+label = "Curation"
 
 [[days.blocks]]
 title = "Part 1"
@@ -530,7 +530,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 11: Fine-tune Large Language Models"
 subtitle = "Use Supervised Fine-tuning and Low-Rank Adaptation to fine-tune a large language model"
-label = "Ch 11"
+label = "SFT & LoRA"
 
 [[days.blocks]]
 title = "Part 1"
@@ -573,7 +573,7 @@ resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-co
 [[days]]
 title = "Chapter 12: Build Reasoning Models"
 subtitle = "Learn how to build reasoning models like DeepSeek R1"
-label = "Ch 12"
+label = "Reasoning"
 
 [[days.blocks]]
 title = "Part 1"
