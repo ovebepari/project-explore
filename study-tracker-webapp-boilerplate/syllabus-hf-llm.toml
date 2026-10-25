@@ -3,9 +3,9 @@ title = "HuggingFace LLM Course"
 subtitle = "12 chapters — from Transformer fundamentals to building reasoning models"
 
 [[days]]
-title = "0. Setup"
+title = "Chapter 0: Setup"
 subtitle = ""
-label = "0"
+label = "Ch 0"
 
 [[days.blocks]]
 title = "Lessons"
@@ -17,9 +17,9 @@ text = "Introduction"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter0/1" }]
 
 [[days]]
-title = "1. Transformer models"
+title = "Chapter 1: Transformer models"
 subtitle = ""
-label = "1"
+label = "Ch 1"
 
 [[days.blocks]]
 title = "Part 1"
@@ -81,9 +81,9 @@ text = "Certification exam"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/11" }]
 
 [[days]]
-title = "2. Using 🤗 Transformers"
+title = "Chapter 2: Using 🤗 Transformers"
 subtitle = ""
-label = "2"
+label = "Ch 2"
 
 [[days.blocks]]
 title = "Part 1"
@@ -137,9 +137,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/9" }]
 
 [[days]]
-title = "3. Fine-tuning a pretrained model"
+title = "Chapter 3: Fine-tuning a pretrained model"
 subtitle = ""
-label = "3"
+label = "Ch 3"
 
 [[days.blocks]]
 title = "Part 1"
@@ -180,9 +180,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter3/7" }]
 
 [[days]]
-title = "4. Sharing models and tokenizers"
+title = "Chapter 4: Sharing models and tokenizers"
 subtitle = ""
-label = "4"
+label = "Ch 4"
 
 [[days.blocks]]
 title = "Part 1"
@@ -219,9 +219,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter4/6" }]
 
 [[days]]
-title = "5. The 🤗 Datasets library"
+title = "Chapter 5: The 🤗 Datasets library"
 subtitle = ""
-label = "5"
+label = "Ch 5"
 
 [[days.blocks]]
 title = "Part 1"
@@ -266,9 +266,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/8" }]
 
 [[days]]
-title = "6. The 🤗 Tokenizers library"
+title = "Chapter 6: The 🤗 Tokenizers library"
 subtitle = ""
-label = "6"
+label = "Ch 6"
 
 [[days.blocks]]
 title = "Part 1"
@@ -330,9 +330,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/10" }]
 
 [[days]]
-title = "7. Classical NLP tasks"
+title = "Chapter 7: Classical NLP tasks"
 subtitle = ""
-label = "7"
+label = "Ch 7"
 
 [[days.blocks]]
 title = "Part 1"
@@ -386,9 +386,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/9" }]
 
 [[days]]
-title = "8. How to ask for help"
+title = "Chapter 8: How to ask for help"
 subtitle = ""
-label = "8"
+label = "Ch 8"
 
 [[days.blocks]]
 title = "Part 1"
@@ -429,9 +429,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter8/7" }]
 
 [[days]]
-title = "9. Building and sharing demos"
+title = "Chapter 9: Building and sharing demos"
 subtitle = "I trained a model, but how can I show it off?"
-label = "9"
+label = "Ch 9"
 
 [[days.blocks]]
 title = "Part 1"
@@ -485,9 +485,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/9" }]
 
 [[days]]
-title = "10. Curate high-quality datasets"
+title = "Chapter 10: Curate high-quality datasets"
 subtitle = "How to use Argilla to create amazing datasets"
-label = "10"
+label = "Ch 10"
 
 [[days.blocks]]
 title = "Part 1"
@@ -528,9 +528,9 @@ text = "End-of-chapter quiz"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter10/7" }]
 
 [[days]]
-title = "11. Fine-tune Large Language Models"
+title = "Chapter 11: Fine-tune Large Language Models"
 subtitle = "Use Supervised Fine-tuning and Low-Rank Adaptation to fine-tune a large language model"
-label = "11"
+label = "Ch 11"
 
 [[days.blocks]]
 title = "Part 1"
@@ -571,9 +571,9 @@ text = "Exam Time!"
 resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter11/7" }]
 
 [[days]]
-title = "12. Build Reasoning Models"
+title = "Chapter 12: Build Reasoning Models"
 subtitle = "Learn how to build reasoning models like DeepSeek R1"
-label = "12"
+label = "Ch 12"
 
 [[days.blocks]]
 title = "Part 1"
