@@ -1,0 +1,618 @@
+[meta]
+title = "HuggingFace LLM Course"
+subtitle = "12 chapters — from Transformer fundamentals to building reasoning models"
+
+[[days]]
+title = "0. Setup"
+subtitle = ""
+label = "0"
+
+[[days.blocks]]
+title = "Lessons"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter0/1" }]
+
+[[days]]
+title = "1. Transformer models"
+subtitle = ""
+label = "1"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/1" }]
+
+[[days.blocks.tasks]]
+text = "Natural Language Processing and Large Language Models"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/2" }]
+
+[[days.blocks.tasks]]
+text = "Transformers, what can they do?"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/3" }]
+
+[[days.blocks.tasks]]
+text = "How do Transformers work?"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "How 🤗 Transformers solve tasks"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/5" }]
+
+[[days.blocks.tasks]]
+text = "Transformer Architectures"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/6" }]
+
+[[days.blocks.tasks]]
+text = "Quick quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/7" }]
+
+[[days.blocks.tasks]]
+text = "Inference with LLMs"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/8" }]
+
+[[days.blocks]]
+title = "Part 3"
+badge = "evening"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Bias and limitations"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/9" }]
+
+[[days.blocks.tasks]]
+text = "Summary"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/10" }]
+
+[[days.blocks.tasks]]
+text = "Certification exam"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter1/11" }]
+
+[[days]]
+title = "2. Using 🤗 Transformers"
+subtitle = ""
+label = "2"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/1" }]
+
+[[days.blocks.tasks]]
+text = "Behind the pipeline"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/2" }]
+
+[[days.blocks.tasks]]
+text = "Models"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/3" }]
+
+[[days.blocks.tasks]]
+text = "Tokenizers"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Handling multiple sequences"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/5" }]
+
+[[days.blocks.tasks]]
+text = "Putting it all together"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/6" }]
+
+[[days.blocks.tasks]]
+text = "Basic usage completed!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/7" }]
+
+[[days.blocks.tasks]]
+text = "Optimized Inference Deployment"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/8" }]
+
+[[days.blocks]]
+title = "Part 3"
+badge = "evening"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter2/9" }]
+
+[[days]]
+title = "3. Fine-tuning a pretrained model"
+subtitle = ""
+label = "3"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter3/1" }]
+
+[[days.blocks.tasks]]
+text = "Processing the data"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter3/2" }]
+
+[[days.blocks.tasks]]
+text = "Fine-tuning a model with the Trainer API"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter3/3" }]
+
+[[days.blocks.tasks]]
+text = "A full training loop"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter3/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Understanding Learning Curves"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter3/5" }]
+
+[[days.blocks.tasks]]
+text = "Fine-tuning, Check!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter3/6" }]
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter3/7" }]
+
+[[days]]
+title = "4. Sharing models and tokenizers"
+subtitle = ""
+label = "4"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "The Hugging Face Hub"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter4/1" }]
+
+[[days.blocks.tasks]]
+text = "Using pretrained models"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter4/2" }]
+
+[[days.blocks.tasks]]
+text = "Sharing pretrained models"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter4/3" }]
+
+[[days.blocks.tasks]]
+text = "Building a model card"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter4/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Part 1 completed!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter4/5" }]
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter4/6" }]
+
+[[days]]
+title = "5. The 🤗 Datasets library"
+subtitle = ""
+label = "5"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/1" }]
+
+[[days.blocks.tasks]]
+text = "What if my dataset isn't on the Hub?"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/2" }]
+
+[[days.blocks.tasks]]
+text = "Time to slice and dice"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/3" }]
+
+[[days.blocks.tasks]]
+text = "Big data? 🤗 Datasets to the rescue!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Creating your own dataset"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/5" }]
+
+[[days.blocks.tasks]]
+text = "Semantic search with FAISS"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/6" }]
+
+[[days.blocks.tasks]]
+text = "🤗 Datasets, check!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/7" }]
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter5/8" }]
+
+[[days]]
+title = "6. The 🤗 Tokenizers library"
+subtitle = ""
+label = "6"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/1" }]
+
+[[days.blocks.tasks]]
+text = "Training a new tokenizer from an old one"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/2" }]
+
+[[days.blocks.tasks]]
+text = "Fast tokenizers' special powers"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/3" }]
+
+[[days.blocks.tasks]]
+text = "Fast tokenizers in the QA pipeline"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/3b" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Normalization and pre-tokenization"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/4" }]
+
+[[days.blocks.tasks]]
+text = "Byte-Pair Encoding tokenization"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/5" }]
+
+[[days.blocks.tasks]]
+text = "WordPiece tokenization"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/6" }]
+
+[[days.blocks.tasks]]
+text = "Unigram tokenization"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/7" }]
+
+[[days.blocks]]
+title = "Part 3"
+badge = "evening"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Building a tokenizer, block by block"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/8" }]
+
+[[days.blocks.tasks]]
+text = "Tokenizers, check!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/9" }]
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter6/10" }]
+
+[[days]]
+title = "7. Classical NLP tasks"
+subtitle = ""
+label = "7"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/1" }]
+
+[[days.blocks.tasks]]
+text = "Token classification"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/2" }]
+
+[[days.blocks.tasks]]
+text = "Fine-tuning a masked language model"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/3" }]
+
+[[days.blocks.tasks]]
+text = "Translation"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Summarization"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/5" }]
+
+[[days.blocks.tasks]]
+text = "Training a causal language model from scratch"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/6" }]
+
+[[days.blocks.tasks]]
+text = "Question answering"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/7" }]
+
+[[days.blocks.tasks]]
+text = "Mastering LLMs"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/8" }]
+
+[[days.blocks]]
+title = "Part 3"
+badge = "evening"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter7/9" }]
+
+[[days]]
+title = "8. How to ask for help"
+subtitle = ""
+label = "8"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter8/1" }]
+
+[[days.blocks.tasks]]
+text = "What to do when you get an error"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter8/2" }]
+
+[[days.blocks.tasks]]
+text = "Asking for help on the forums"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter8/3" }]
+
+[[days.blocks.tasks]]
+text = "Debugging the training pipeline"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter8/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "How to write a good issue"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter8/5" }]
+
+[[days.blocks.tasks]]
+text = "Part 2 completed!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter8/6" }]
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter8/7" }]
+
+[[days]]
+title = "9. Building and sharing demos"
+subtitle = "I trained a model, but how can I show it off?"
+label = "9"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction to Gradio"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/1" }]
+
+[[days.blocks.tasks]]
+text = "Building your first demo"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/2" }]
+
+[[days.blocks.tasks]]
+text = "Understanding the Interface class"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/3" }]
+
+[[days.blocks.tasks]]
+text = "Sharing demos with others"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Integrations with the Hugging Face Hub"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/5" }]
+
+[[days.blocks.tasks]]
+text = "Advanced Interface features"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/6" }]
+
+[[days.blocks.tasks]]
+text = "Introduction to Blocks"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/7" }]
+
+[[days.blocks.tasks]]
+text = "Gradio, check!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/8" }]
+
+[[days.blocks]]
+title = "Part 3"
+badge = "evening"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter9/9" }]
+
+[[days]]
+title = "10. Curate high-quality datasets"
+subtitle = "How to use Argilla to create amazing datasets"
+label = "10"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction to Argilla"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter10/1" }]
+
+[[days.blocks.tasks]]
+text = "Set up your Argilla instance"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter10/2" }]
+
+[[days.blocks.tasks]]
+text = "Load your dataset to Argilla"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter10/3" }]
+
+[[days.blocks.tasks]]
+text = "Annotate your dataset"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter10/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Use your annotated dataset"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter10/5" }]
+
+[[days.blocks.tasks]]
+text = "Argilla, check!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter10/6" }]
+
+[[days.blocks.tasks]]
+text = "End-of-chapter quiz"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter10/7" }]
+
+[[days]]
+title = "11. Fine-tune Large Language Models"
+subtitle = "Use Supervised Fine-tuning and Low-Rank Adaptation to fine-tune a large language model"
+label = "11"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter11/1" }]
+
+[[days.blocks.tasks]]
+text = "Chat Templates"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter11/2" }]
+
+[[days.blocks.tasks]]
+text = "Fine-Tuning with SFTTrainer"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter11/3" }]
+
+[[days.blocks.tasks]]
+text = "LoRA (Low-Rank Adaptation)"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter11/4" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Evaluation"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter11/5" }]
+
+[[days.blocks.tasks]]
+text = "Conclusion"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter11/6" }]
+
+[[days.blocks.tasks]]
+text = "Exam Time!"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter11/7" }]
+
+[[days]]
+title = "12. Build Reasoning Models"
+subtitle = "Learn how to build reasoning models like DeepSeek R1"
+label = "12"
+
+[[days.blocks]]
+title = "Part 1"
+badge = "morning"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Introduction"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter12/1" }]
+
+[[days.blocks.tasks]]
+text = "Reinforcement Learning on LLMs"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter12/2" }]
+
+[[days.blocks.tasks]]
+text = "The Aha Moment in the DeepSeek R1 Paper"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter12/3" }]
+
+[[days.blocks.tasks]]
+text = "Advanced Understanding of GRPO in DeepSeekMath"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter12/3b" }]
+
+[[days.blocks]]
+title = "Part 2"
+badge = "afternoon"
+icon = "📚"
+
+[[days.blocks.tasks]]
+text = "Implementing GRPO in TRL"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter12/4" }]
+
+[[days.blocks.tasks]]
+text = "Practical Exercise to Fine-tune a model with GRPO"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter12/5" }]
+
+[[days.blocks.tasks]]
+text = "Practical Exercise with Unsloth"
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter12/6" }]
+
+[[days.blocks.tasks]]
+text = "Coming soon..."
+resources = [{ label = "HuggingFace", url = "https://huggingface.co/learn/llm-course/chapter12/7" }]
