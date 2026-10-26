@@ -61,6 +61,44 @@ const ZEN_NUDGES = [
   '💡 5 minutes gone — are you still studying?',
 ];
 
+// Gentle bell "tung" — warm, inviting single-strike chime
+function playTung() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+
+    // Main bell tone (G5 ~784 Hz)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(784, now);
+    gain1.gain.setValueAtTime(0.35, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+    osc1.connect(gain1).connect(ctx.destination);
+
+    // Soft harmonic overtone (octave above, quieter)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(1568, now);
+    gain2.gain.setValueAtTime(0.12, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+    osc2.connect(gain2).connect(ctx.destination);
+
+    // Warm low body (fundamental, one octave below)
+    const osc3 = ctx.createOscillator();
+    const gain3 = ctx.createGain();
+    osc3.type = 'sine';
+    osc3.frequency.setValueAtTime(392, now);
+    gain3.gain.setValueAtTime(0.15, now);
+    gain3.gain.exponentialRampToValueAtTime(0.001, now + 2.2);
+    osc3.connect(gain3).connect(ctx.destination);
+
+    [osc1, osc2, osc3].forEach(o => { o.start(now); o.stop(now + 2.5); });
+    setTimeout(() => ctx.close(), 3000);
+  } catch (_) {}
+}
+
 function startZenReminder() {
   stopZenReminder();
   if (Notification.permission === 'default') Notification.requestPermission();
@@ -68,7 +106,8 @@ function startZenReminder() {
     if (!dimMode || !document.hidden) return;
     if (Notification.permission !== 'granted') return;
     const msg = ZEN_NUDGES[Math.floor(Math.random() * ZEN_NUDGES.length)];
-    new Notification('Study Tracker — Zen Mode', { body: msg, icon: '🌿', silent: false });
+    new Notification('Study Tracker — Zen Mode', { body: msg, icon: '🌿', silent: true });
+    playTung();
   }, 5 * 60 * 1000);
 }
 
