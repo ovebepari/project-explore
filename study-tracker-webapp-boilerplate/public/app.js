@@ -115,15 +115,25 @@ function stopZenReminder() {
   if (zenReminderInterval) { clearInterval(zenReminderInterval); zenReminderInterval = null; }
 }
 
+// ── Music toggle (independent of zen mode) ──
+let musicOn = localStorage.getItem('music-on') === 'true';
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  localStorage.setItem('music-on', musicOn);
+  const btn = document.getElementById('musicToggle');
+  if (btn) btn.classList.toggle('active', musicOn);
+  if (musicOn) zenAudio.start(); else zenAudio.stop();
+}
+
 function toggleDimMode() {
   dimMode = !dimMode;
   localStorage.setItem('dim-mode', dimMode);
   document.documentElement.classList.toggle('dim-mode', dimMode);
   const btn = document.getElementById('dimToggle');
   if (btn) btn.classList.toggle('active', dimMode);
-  // Toggle zen audio + reminders
-  if (dimMode) { zenAudio.start(); startZenReminder(); }
-  else { zenAudio.stop(); stopZenReminder(); }
+  // Toggle zen reminders only
+  if (dimMode) startZenReminder(); else stopZenReminder();
 }
 function setFocusedBlock(blockCard) {
   if (!dimMode) return;
@@ -131,6 +141,7 @@ function setFocusedBlock(blockCard) {
   if (blockCard) blockCard.classList.add('focused');
 }
 if (dimMode) document.documentElement.classList.add('dim-mode');
+if (musicOn) zenAudio.start();
 
 // ===== STATE =====
 let state = null;
@@ -277,6 +288,9 @@ function renderApp() {
           <div class="header-stat"><span class="stat-label">Overall</span><span class="stat-value" id="overallPercent">0%</span></div>
           <div class="header-stat"><span class="stat-label">Streak</span><span class="stat-value" id="streakCount">0 🔥</span></div>
           <div class="header-stat"><span class="stat-label">Hours</span><span class="stat-value" id="totalHours">0h</span></div>
+          <button class="btn-theme" id="musicToggle" title="Toggle study music" ${musicOn ? 'class="btn-theme active"' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </button>
           <button class="btn-theme" id="dimToggle" title="Zen mode" ${dimMode ? 'class="btn-theme active"' : ''}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 22c-4-4-8-7.5-8-12a8 8 0 0 1 16 0c0 4.5-4 8-8 12z"/><path d="M12 10v6"/><path d="M9 13l3-3 3 3"/></svg>
           </button>
@@ -367,6 +381,9 @@ function renderApp() {
   document.getElementById('dimToggle').addEventListener('click', toggleDimMode);
   const dimBtn = document.getElementById('dimToggle');
   if (dimMode) dimBtn.classList.add('active');
+  document.getElementById('musicToggle').addEventListener('click', toggleMusic);
+  const musicBtn = document.getElementById('musicToggle');
+  if (musicOn) musicBtn.classList.add('active');
   document.getElementById('resetBtn').addEventListener('click', resetAll);
   document.getElementById('dataToggle').addEventListener('click', toggleDataPanel);
   document.getElementById('timerStart').addEventListener('click', startTimer);
